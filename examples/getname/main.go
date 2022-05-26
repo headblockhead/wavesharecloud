@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net"
 	"os"
+
+	"github.com/headblockhead/waveshareCloud"
 )
 
 const (
@@ -38,10 +40,13 @@ func main() {
 func handleRequest(conn net.Conn) {
 	fmt.Println("handle connection")
 	// Get device ID
-	waveshare.send("G", conn)
-	command, data := recieve(conn)
-	print(command, data)
+	waveshareCloud.Send("G", conn)
+	err, command, data := waveshareCloud.Recieve(conn)
+	if err != nil {
+		fmt.Println("Error reading:", err.Error())
+	}
+	fmt.Println("Received:", data, "From:", command)
 	// Shutdown the connection.
-	waveshare.send("S", conn)
+	waveshareCloud.Send("S", conn)
 	conn.Close()
 }
