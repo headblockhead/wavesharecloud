@@ -1,0 +1,47 @@
+package main
+
+import (
+	"fmt"
+	"net"
+	"os"
+)
+
+const (
+	CONN_HOST = "192.168.155.216"
+	CONN_PORT = "6868"
+	CONN_TYPE = "tcp"
+)
+
+func main() {
+	// Listen for incoming connections.
+	l, err := net.Listen(CONN_TYPE, CONN_HOST+":"+CONN_PORT)
+	if err != nil {
+		fmt.Println("Error listening:", err.Error())
+		os.Exit(1)
+	}
+	// Close the listener when the application closes.
+	defer l.Close()
+	fmt.Println("Listening on " + CONN_HOST + ":" + CONN_PORT)
+	for {
+		// Listen for an incoming connection.
+		conn, err := l.Accept()
+		fmt.Println("Accepted connection")
+		if err != nil {
+			fmt.Println("Error accepting: ", err.Error())
+			os.Exit(1)
+		}
+		// Handle connections in a new goroutine.
+		go handleRequest(conn)
+	}
+}
+
+func handleRequest(conn net.Conn) {
+	fmt.Println("handle connection")
+	// Get device ID
+	waveshare.send("G", conn)
+	command, data := recieve(conn)
+	print(command, data)
+	// Shutdown the connection.
+	waveshare.send("S", conn)
+	conn.Close()
+}
