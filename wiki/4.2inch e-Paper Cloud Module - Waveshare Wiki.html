@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<!-- saved from url=(0082)https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Communicating_Protocol -->
+<html class="client-js" lang="en" dir="ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>4.2inch e-Paper Cloud Module - Waveshare Wiki</title>
+<script>document.documentElement.className="client-js";RLCONF={"wgBreakFrames":!1,"wgSeparatorTransformTable":["",""],"wgDigitTransformTable":["",""],"wgDefaultDateFormat":"dmy","wgMonthNames":["","January","February","March","April","May","June","July","August","September","October","November","December"],"wgRequestId":"ebc00490d505caeea5c5144c","wgCSPNonce":!1,"wgCanonicalNamespace":"","wgCanonicalSpecialPageName":!1,"wgNamespaceNumber":0,"wgPageName":"4.2inch_e-Paper_Cloud_Module","wgTitle":"4.2inch e-Paper Cloud Module","wgCurRevisionId":32716,"wgRevisionId":32716,"wgArticleId":7190,"wgIsArticle":!0,"wgIsRedirect":!1,"wgAction":"view","wgUserName":null,"wgUserGroups":["*"],"wgCategories":["SPI interface"],"wgPageContentLanguage":"en","wgPageContentModel":"wikitext","wgRelevantPageName":"4.2inch_e-Paper_Cloud_Module","wgRelevantArticleId":7190,"wgIsProbablyEditable":!1,"wgRelevantPageIsProbablyEditable":!1,"wgRestrictionEdit":[],"wgRestrictionMove":[],
+"wgMediaViewerOnClick":!0,"wgMediaViewerEnabledByDefault":!0};RLSTATE={"ext.gadget.tabber":"ready","site.styles":"ready","noscript":"ready","user.styles":"ready","user":"ready","user.options":"loading","mediawiki.toc.styles":"ready","skins.tweeki.styles":"ready","skins.tweeki.bootstraptheme.styles":"ready","skins.tweeki.externallinks.styles":"ready","skins.tweeki.awesome.styles":"ready"};RLPAGEMODULES=["site","mediawiki.page.startup","mediawiki.page.ready","mediawiki.toc","mmv.head","mmv.bootstrap.autostart","ext.HighlightjsIntegration","skins.tweeki.messages","skins.tweeki.scripts"];</script>
+<script>(RLQ=window.RLQ||[]).push(function(){mw.loader.implement("user.options@1hzgi",function($,jQuery,require,module){/*@nomin*/mw.user.tokens.set({"patrolToken":"+\\","watchToken":"+\\","csrfToken":"+\\"});
+});});</script>
+<link rel="stylesheet" href="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/load.php">
+<script async="" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/load(1).php"></script>
+<style>
+.mw-ui-button{background-color:#f8f9fa;color:#202122;display:inline-block;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;min-width:4em;max-width:28.75em;margin:0;padding:6px 12px;border:1px solid #a2a9b1;border-radius:2px;cursor:pointer;vertical-align:middle;font-family:inherit;font-size:1em;font-weight:bold;line-height:1.28571429em;text-align:center;-webkit-appearance:none}.mw-ui-button:visited{color:#202122}.mw-ui-button:hover{background-color:#ffffff;color:#404244;border-color:#a2a9b1}.mw-ui-button:focus{background-color:#ffffff;color:#202122;border-color:#3366cc;box-shadow:inset 0 0 0 1px #3366cc,inset 0 0 0 2px #ffffff;outline-width:0}.mw-ui-button:focus::-moz-focus-inner{border-color:transparent;padding:0}.mw-ui-button:active,.mw-ui-button.is-on{background-color:#c8ccd1;color:#000000;border-color:#72777d;box-shadow:none}.mw-ui-button:disabled{background-color:#c8ccd1;color:#ffffff;border-color:#c8ccd1;cursor:default}.mw-ui-button:disabled:hover,.mw-ui-button:disabled:active{background-color:#c8ccd1;color:#ffffff;box-shadow:none;border-color:#c8ccd1}.mw-ui-button:not(:disabled){-webkit-transition:background-color 100ms,color 100ms,border-color 100ms,box-shadow 100ms;-moz-transition:background-color 100ms,color 100ms,border-color 100ms,box-shadow 100ms;transition:background-color 100ms,color 100ms,border-color 100ms,box-shadow 100ms}.mw-ui-button.mw-ui-quiet,.mw-ui-button.mw-ui-quiet.mw-ui-progressive,.mw-ui-button.mw-ui-quiet.mw-ui-destructive{background-color:transparent;color:#202122;border-color:transparent}.mw-ui-button.mw-ui-quiet:hover,.mw-ui-button.mw-ui-quiet.mw-ui-progressive:hover,.mw-ui-button.mw-ui-quiet.mw-ui-destructive:hover{background-color:transparent;color:#404244;border-color:transparent;box-shadow:none}.mw-ui-button.mw-ui-quiet:active,.mw-ui-button.mw-ui-quiet.mw-ui-progressive:active,.mw-ui-button.mw-ui-quiet.mw-ui-destructive:active{background-color:transparent;color:#000000;border-color:transparent}.mw-ui-button.mw-ui-quiet:focus,.mw-ui-button.mw-ui-quiet.mw-ui-progressive:focus,.mw-ui-button.mw-ui-quiet.mw-ui-destructive:focus{background-color:transparent;color:#202122;border-color:transparent;box-shadow:none}.mw-ui-button.mw-ui-quiet:disabled,.mw-ui-button.mw-ui-quiet.mw-ui-progressive:disabled,.mw-ui-button.mw-ui-quiet.mw-ui-destructive:disabled,.mw-ui-button.mw-ui-quiet:disabled:hover,.mw-ui-button.mw-ui-quiet.mw-ui-progressive:disabled:hover,.mw-ui-button.mw-ui-quiet.mw-ui-destructive:disabled:hover,.mw-ui-button.mw-ui-quiet:disabled:active,.mw-ui-button.mw-ui-quiet.mw-ui-progressive:disabled:active,.mw-ui-button.mw-ui-quiet.mw-ui-destructive:disabled:active{background-color:transparent;color:#72777d;border-color:transparent}.mw-ui-button.mw-ui-progressive{background-color:#3366cc;color:#fff;border:1px solid #3366cc}.mw-ui-button.mw-ui-progressive:hover{background-color:#447ff5;border-color:#447ff5}.mw-ui-button.mw-ui-progressive:focus{box-shadow:inset 0 0 0 1px #3366cc,inset 0 0 0 2px #ffffff}.mw-ui-button.mw-ui-progressive:active,.mw-ui-button.mw-ui-progressive.is-on{background-color:#2a4b8d;border-color:#2a4b8d;box-shadow:none}.mw-ui-button.mw-ui-progressive:disabled{background-color:#c8ccd1;color:#fff;border-color:#c8ccd1}.mw-ui-button.mw-ui-progressive:disabled:hover,.mw-ui-button.mw-ui-progressive:disabled:active{background-color:#c8ccd1;color:#fff;border-color:#c8ccd1;box-shadow:none}.mw-ui-button.mw-ui-progressive.mw-ui-quiet{color:#3366cc}.mw-ui-button.mw-ui-progressive.mw-ui-quiet:hover{background-color:transparent;color:#447ff5}.mw-ui-button.mw-ui-progressive.mw-ui-quiet:active{color:#2a4b8d}.mw-ui-button.mw-ui-progressive.mw-ui-quiet:focus{background-color:transparent;color:#3366cc}.mw-ui-button.mw-ui-destructive{background-color:#dd3333;color:#fff;border:1px solid #dd3333}.mw-ui-button.mw-ui-destructive:hover{background-color:#ff4242;border-color:#ff4242}.mw-ui-button.mw-ui-destructive:focus{box-shadow:inset 0 0 0 1px #dd3333,inset 0 0 0 2px #ffffff}.mw-ui-button.mw-ui-destructive:active,.mw-ui-button.mw-ui-destructive.is-on{background-color:#b32424;border-color:#b32424;box-shadow:none}.mw-ui-button.mw-ui-destructive:disabled{background-color:#c8ccd1;color:#fff;border-color:#c8ccd1}.mw-ui-button.mw-ui-destructive:disabled:hover,.mw-ui-button.mw-ui-destructive:disabled:active{background-color:#c8ccd1;color:#fff;border-color:#c8ccd1;box-shadow:none}.mw-ui-button.mw-ui-destructive.mw-ui-quiet{color:#dd3333}.mw-ui-button.mw-ui-destructive.mw-ui-quiet:hover{background-color:transparent;color:#ff4242}.mw-ui-button.mw-ui-destructive.mw-ui-quiet:active{color:#b32424}.mw-ui-button.mw-ui-destructive.mw-ui-quiet:focus{background-color:transparent;color:#dd3333}.mw-ui-button.mw-ui-big{font-size:1.3em}.mw-ui-button.mw-ui-block{display:block;width:100%;margin-left:auto;margin-right:auto}input.mw-ui-button::-moz-focus-inner,button.mw-ui-button::-moz-focus-inner{margin-top:-1px;margin-bottom:-1px}a.mw-ui-button{text-decoration:none}a.mw-ui-button:hover,a.mw-ui-button:focus{text-decoration:none}.mw-ui-button-group > *{min-width:48px;border-radius:0;float:left}.mw-ui-button-group > *:first-child{border-top-left-radius:2px;border-bottom-left-radius:2px}.mw-ui-button-group > *:not(:first-child){border-left:0}.mw-ui-button-group > *:last-child{border-top-right-radius:2px;border-bottom-right-radius:2px}.mw-ui-button-group .is-on .button{cursor:default}
+.mw-ui-icon{position:relative;line-height:1.5em;min-height:1.5em;min-width:1.5em}span.mw-ui-icon{display:inline-block}.mw-ui-icon.mw-ui-icon-element{text-indent:-999px;overflow:hidden;width:3.5em;min-width:3.5em;max-width:3.5em}.mw-ui-icon.mw-ui-icon-element:before{left:0;right:0;position:absolute;margin:0 1em}.mw-ui-icon.mw-ui-icon-element.mw-ui-icon-large{width:4.625em;min-width:4.625em;max-width:4.625em;line-height:4.625em;min-height:4.625em}.mw-ui-icon.mw-ui-icon-element.mw-ui-icon-large:before{min-height:4.625em}.mw-ui-icon.mw-ui-icon-before:before,.mw-ui-icon.mw-ui-icon-element:before{background-position:50% 50%;background-repeat:no-repeat;background-size:100% auto;float:left;display:block;min-height:1.5em;content:''}.mw-ui-icon.mw-ui-icon-before:before{position:relative;width:1.5em;margin-right:1em}.mw-ui-icon.mw-ui-icon-small:before{background-size:66.67% auto}
+pre.code2highlight,pre.nohighlight{  padding:0.5em}code.code2highlight.hljs{  padding:1px 4px}.hljs{display:block;overflow-x:auto;padding:0.5em;background:#1E1E1E;color:#DCDCDC}.hljs-keyword,.hljs-literal,.hljs-symbol,.hljs-name{color:#569CD6}.hljs-link{color:#569CD6;text-decoration:underline}.hljs-built_in,.hljs-type{color:#4EC9B0}.hljs-number,.hljs-class{color:#B8D7A3}.hljs-string,.hljs-meta-string{color:#D69D85}.hljs-regexp,.hljs-template-tag{color:#9A5334}.hljs-subst,.hljs-function,.hljs-title,.hljs-params,.hljs-formula{color:#DCDCDC}.hljs-comment,.hljs-quote{color:#57A64A;font-style:italic}.hljs-doctag{color:#608B4E}.hljs-meta,.hljs-meta-keyword,.hljs-tag{color:#9B9B9B}.hljs-variable,.hljs-template-variable{color:#BD63C5}.hljs-attr,.hljs-attribute,.hljs-builtin-name{color:#9CDCFE}.hljs-section{color:gold}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-bullet,.hljs-selector-tag,.hljs-selector-id,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo{color:#D7BA7D}.hljs-addition{background-color:#144212;display:inline-block;width:100%}.hljs-deletion{background-color:#600;display:inline-block;width:100%}
+@media screen {
+	.toctoggle{-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;user-select:none;font-size:94%}}</style><style>
+.mw-mmv-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:1000;background-color:#000}body.mw-mmv-lightbox-open{overflow-y:auto;  }body.mw-mmv-lightbox-open #mw-page-base,body.mw-mmv-lightbox-open #mw-head-base,body.mw-mmv-lightbox-open #mw-navigation,body.mw-mmv-lightbox-open #content,body.mw-mmv-lightbox-open #footer,body.mw-mmv-lightbox-open #globalWrapper{ display:none}body.mw-mmv-lightbox-open > *{ display:none}body.mw-mmv-lightbox-open > .mw-mmv-overlay,body.mw-mmv-lightbox-open > .mw-mmv-wrapper{display:block}.mw-mmv-filepage-buttons{margin-top:5px}.mw-mmv-filepage-buttons .mw-mmv-view-expanded,.mw-mmv-filepage-buttons .mw-mmv-view-config{display:block;line-height:inherit}.mw-mmv-filepage-buttons .mw-mmv-view-expanded.mw-ui-icon:before{background-image:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1024 768%22%3E %3Cpath d=%22M851.2 71.6L690.7 232.1l-40.1-40.3-9.6 164.8 164.8-9.3-40.3-40.4L926 146.4l58.5 58.5L997.6 0 792.7 13.1%22/%3E %3Cpath d=%22M769.6 89.3H611.9l70.9 70.8 7.9 7.5m-47.1 234.6l-51.2 3 3-51.2 9.4-164.4 5.8-100.3H26.4V768h883.1V387l-100.9 5.8-165 9.4zM813.9 678H113.6l207.2-270.2 31.5-12.9L548 599.8l105.9-63.2 159.8 140.8.2.6zm95.6-291.9V228l-79.1 78.9 7.8 7.9%22/%3E %3C/svg%3E")}.mw-mmv-filepage-buttons .mw-mmv-view-config.mw-ui-icon:before{background-image:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1024 768%22%3E %3Cpath d=%22M897 454.6V313.4L810.4 299c-6.4-23.3-16-45.7-27.3-65.8l50.5-71.4-99.4-100.2-71.4 50.5c-20.9-11.2-42.5-20.9-65.8-27.3L582.6-1H441.4L427 85.6c-23.3 6.4-45.7 16-65.8 27.3l-71.4-50.5-100.3 99.5 50.5 71.4c-11.2 20.9-20.9 42.5-27.3 66.6L127 313.4v141.2l85.8 14.4c6.4 23.3 16 45.7 27.3 66.6L189.6 607l99.5 99.5 71.4-50.5c20.9 11.2 42.5 20.9 66.6 27.3l14.4 85.8h141.2l14.4-86.6c23.3-6.4 45.7-16 65.8-27.3l71.4 50.5 99.5-99.5-50.5-71.4c11.2-20.9 20.9-42.5 27.3-66.6l86.4-13.6zm-385 77c-81.8 0-147.6-66.6-147.6-147.6 0-81.8 66.6-147.6 147.6-147.6S659.6 302.2 659.6 384 593.8 531.6 512 531.6z%22/%3E %3C/svg%3E");opacity:0.75}.mw-mmv-filepage-buttons .mw-mmv-view-config.mw-ui-icon:before:hover{opacity:1}.mw-mmv-button{background-color:transparent;min-width:0;border:0;padding:0;overflow-x:hidden;text-indent:-9999em}</style><meta name="ResourceLoaderDynamicStyles" content="">
+<link rel="stylesheet" href="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/load(2).php">
+<link rel="stylesheet" href="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/load(3).php">
+<meta name="generator" content="MediaWiki 1.35.5">
+<meta property="og:image" content="https://www.waveshare.com/w/thumb.php?f=4.2inch-e-Paper-Cloud-Module-1.jpg&amp;width=1200">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" href="https://www.waveshare.com/favicon.ico">
+<link rel="search" type="application/opensearchdescription+xml" href="https://www.waveshare.com/w/opensearch_desc.php" title="Waveshare Wiki (en)">
+<link rel="EditURI" type="application/rsd+xml" href="https://www.waveshare.com/w/api.php?action=rsd">
+<link rel="alternate" type="application/atom+xml" title="Waveshare Wiki Atom feed" href="https://www.waveshare.com/w/index.php?title=Special:RecentChanges&amp;feed=atom">
+<!--[if lt IE 9]><script src="/w/resources/lib/html5shiv/html5shiv.js"></script><![endif]-->
+</head>
+<body class="mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject page-4_2inch_e-Paper_Cloud_Module rootpage-4_2inch_e-Paper_Cloud_Module skin-tweeki action-view tweeki-animateLayout tweeki-non-advanced tweeki-user-anon" style="margin-bottom: 0px; position: relative;">			<!-- navbar -->
+			<div id="mw-navigation" class="navbar navbar-default navbar-fixed-top navbar-expand-lg fixed-top navbar-light bg-light" role="navigation">
+				<h2>Navigation menu</h2>
+				<div id="mw-head" class="navbar-inner">
+					<div class="container">
+
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+
+							<a href="https://www.waveshare.com/wiki/Main_Page" class="navbar-brand"><img src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Ws-watermark-en.svg" alt="Waveshare Wiki"></a>
+						</div>
+
+						<div id="navbar" class="navbar-collapse collapse">
+													<ul class="nav navbar-nav">
+							<li class="nav"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#" id="n-raspberry-pi" class="dropdown-toggle" data-toggle="dropdown">Raspberry Pi <b class="caret"></b></a><ul class="dropdown-menu " role="menu"><li id="n-main_page.2523rpi-boards"><a href="https://www.waveshare.com/wiki/Main_Page#RPi-Boards" tabindex="-1">Boards/Kits</a></li><li id="n-main_page.2523rpi-displays"><a href="https://www.waveshare.com/wiki/Main_Page#RPi-Displays" tabindex="-1">Displays</a></li><li id="n-main_page.2523rpi-cameras"><a href="https://www.waveshare.com/wiki/Main_Page#RPi-Cameras" tabindex="-1">Cameras</a></li><li id="n-main_page.2523rpi-expansions"><a href="https://www.waveshare.com/wiki/Main_Page#RPi-Expansions" tabindex="-1">Expansions</a></li><li id="n-main_page.2523rpi-laptops"><a href="https://www.waveshare.com/wiki/Main_Page#RPi-Laptops" tabindex="-1">All-in-one</a></li><li id="n-main_page.2523rpi-robots"><a href="https://www.waveshare.com/wiki/Main_Page#RPi-Robots" tabindex="-1">Robots</a></li><li id="n-main_page.2523rpi-games"><a href="https://www.waveshare.com/wiki/Main_Page#RPi-Games" tabindex="-1">Portable Gaming</a></li><li id="n-main_page.2523rpi-acces"><a href="https://www.waveshare.com/wiki/Main_Page#RPi-Acces" tabindex="-1">Accessories</a></li><li id="n-main_page.2523android-linux-boards"><a href="https://www.waveshare.com/wiki/Main_Page#Android-Linux-Boards" tabindex="-1">Other Android/Linux Boards</a></li></ul></li><li class="nav"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#" id="n-ai" class="dropdown-toggle" data-toggle="dropdown">AI <b class="caret"></b></a><ul class="dropdown-menu " role="menu"><li id="n-main_page.2523jetson-ai-boards"><a href="https://www.waveshare.com/wiki/Main_Page#Jetson-AI-Boards" tabindex="-1">Boards/Kits</a></li><li id="n-main_page.2523jetson-ai-displays"><a href="https://www.waveshare.com/wiki/Main_Page#Jetson-AI-Displays" tabindex="-1">Displays</a></li><li id="n-main_page.2523jetson-ai-cameras"><a href="https://www.waveshare.com/wiki/Main_Page#Jetson-AI-Cameras" tabindex="-1">Cameras</a></li><li id="n-main_page.2523jetson-ai-hat"><a href="https://www.waveshare.com/wiki/Main_Page#Jetson-AI-HAT" tabindex="-1">Expansions</a></li><li id="n-main_page.2523jetson-ai-robots"><a href="https://www.waveshare.com/wiki/Main_Page#Jetson-AI-Robots" tabindex="-1">Robots</a></li></ul></li><li class="nav"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#" id="n-displays" class="dropdown-toggle" data-toggle="dropdown">Displays <b class="caret"></b></a><ul class="dropdown-menu " role="menu"><li id="n-main_page.2523display-lcd-oleds"><a href="https://www.waveshare.com/wiki/Main_Page#Display-LCD-OLEDs" tabindex="-1">LCD/OLED</a></li><li id="n-main_page.2523display-e-paper"><a href="https://www.waveshare.com/wiki/Main_Page#Display-e-Paper" tabindex="-1">e-Paper</a></li></ul></li><li class="nav"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#" id="n-iot" class="dropdown-toggle" data-toggle="dropdown">IoT <b class="caret"></b></a><ul class="dropdown-menu " role="menu"><li id="n-main_page.2523long-range-wireless-comm"><a href="https://www.waveshare.com/wiki/Main_Page#Long-range-wireless-comm" tabindex="-1">Long Range Wireless</a></li><li id="n-main_page.2523short-range-wireless-comm"><a href="https://www.waveshare.com/wiki/Main_Page#Short-range-wireless-comm" tabindex="-1">Short Range Wireless</a></li><li id="n-main_page.2523wired-communication"><a href="https://www.waveshare.com/wiki/Main_Page#Wired-communication" tabindex="-1">Wired Comm / Converter</a></li><li id="n-main_page.2523misc-cameras-av"><a href="https://www.waveshare.com/wiki/Main_Page#Misc-cameras-av" tabindex="-1">Cameras / Audio / Video</a></li><li id="n-main_page.2523misc-sensor-modules"><a href="https://www.waveshare.com/wiki/Main_Page#Misc-sensor-modules" tabindex="-1">Sensors</a></li><li id="n-main_page.2523misc-servos-motors"><a href="https://www.waveshare.com/wiki/Main_Page#Misc-servos-motors" tabindex="-1">Motors / Servos</a></li><li id="n-main_page.2523misc-other-modules"><a href="https://www.waveshare.com/wiki/Main_Page#Misc-other-modules" tabindex="-1">others</a></li></ul></li><li class="nav"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#" id="n-robotics" class="dropdown-toggle" data-toggle="dropdown">Robotics <b class="caret"></b></a><ul class="dropdown-menu " role="menu"><li id="n-main_page.2523robotics-cars"><a href="https://www.waveshare.com/wiki/Main_Page#Robotics-cars" tabindex="-1">Mobile Robots</a></li><li id="n-main_page.2523dog-like-robots"><a href="https://www.waveshare.com/wiki/Main_Page#Dog-like-Robots" tabindex="-1">Dog-like Robots</a></li><li id="n-main_page.2523robotics-drivers-sensors"><a href="https://www.waveshare.com/wiki/Main_Page#Robotics-drivers-sensors" tabindex="-1">Drivers / Sensors</a></li><li id="n-main_page.2523robotics-robot-arms"><a href="https://www.waveshare.com/wiki/Main_Page#Robotics-robot-arms" tabindex="-1">Robot Arm / Control</a></li></ul></li><li class="nav"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#" id="n-mcu.252Ffpga" class="dropdown-toggle" data-toggle="dropdown">MCU/FPGA <b class="caret"></b></a><ul class="dropdown-menu " role="menu"><li id="n-main_page.2523arduino-main-boards"><a href="https://www.waveshare.com/wiki/Main_Page#Arduino-main-boards" tabindex="-1">Arduino</a></li><li id="n-main_page.2523micro.253Abit"><a href="https://www.waveshare.com/wiki/Main_Page#micro:bit" tabindex="-1">micro:bit</a></li><li id="n-main_page.2523mcu.2farm" class="LPC"><a href="https://www.waveshare.com/wiki/Main_Page#MCU.2FARM" tabindex="-1">STM32</a></li><li id="n-main_page.2523fpga"><a href="https://www.waveshare.com/wiki/Main_Page#FPGA" tabindex="-1">FPGA</a></li></ul></li><li class="nav"><a href="https://support.waveshare.com/hc/en-us/requests/new" id="n-https.253A.252F.252Fsupport.waveshare.com.252Fhc.252Fen-us.252Frequests.252Fnew" rel="nofollow" target="_blank">Support</a></li>							</ul>
+						
+													<ul class="nav navbar-nav navbar-right">
+														</ul>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+			<!-- /navbar -->
+					<div id="mw-page-base"></div>
+			<div id="mw-head-base"></div>
+			<a id="top"></a>
+
+			<!-- content -->
+			<div id="contentwrapper" class="user-loggedout not-editable container with-navbar with-navbar-fixed">
+
+				
+				<div class="row">
+					<div class="col-md-offset-2 col-md-10" role="main">
+								<div class="mw-body" id="content">
+			<div id="mw-js-message" style="display:none;"></div>
+									<h1 id="firstHeading" class="firstHeading page-header" lang="en"><span dir="auto">4.2inch e-Paper Cloud Module</span></h1>
+									<!-- bodyContent -->
+			<div id="bodyContent">
+								<div id="siteSub">From Waveshare Wiki</div>
+								<div id="contentSub"></div>
+												<div id="jump-to-nav" class="mw-jump">
+					Jump to:					<a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#mw-navigation">navigation</a>, 					<a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#p-search">search</a>
+				</div>
+				<div id="mw-content-text" lang="en" dir="ltr" class="mw-content-ltr"><div class="mw-parser-output"><div class="tabber">
+<table class="a-r at-c roundy bgd-green bl-white" style="margin-left: 5px; margin-bottom: 5px; width: 30%;">
+
+<tbody><tr>
+<td>
+<table class="at-c roundy" style="background: transparent;width:100%;">
+
+<tbody><tr>
+<td class="at-c textwhite"><b>4.2inch e-Paper Cloud Module</b>
+</td></tr>
+<tr>
+<td class="at-c bgwhite" style="margin:5px;"><a href="https://www.waveshare.com/4.2inch-e-Paper-cloud-module.htm" target="_blank" rel="nofollow noreferrer noopener"><img alt="4.2inch-e-Paper-Cloud-Module-1.jpg" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/4.2inch-e-Paper-Cloud-Module-1.jpg" decoding="async" loading="lazy" width="300" height="225" srcset="/w/thumb.php?f=4.2inch-e-Paper-Cloud-Module-1.jpg&amp;width=450 1.5x, /w/thumb.php?f=4.2inch-e-Paper-Cloud-Module-1.jpg&amp;width=600 2x" data-file-width="1440" data-file-height="1080"></a><br><br><small>4.2inch E-Paper Cloud Module, 400×300 Pixels, WiFi Connectivity</small>
+</td></tr></tbody></table>
+</td></tr>
+<tr style="display:none;">
+<td>
+<table class="roundy" style="background: transparent;width:100%;">
+
+<tbody><tr>
+<td class="at-c textwhite"><b>{{{name2}}}</b>
+</td></tr>
+<tr>
+<td class="at-c bgwhite" style="margin:5px;"><br>
+</td></tr></tbody></table>
+</td></tr>
+<tr style="display:none;">
+<td>
+<table class="roundy" style="background: transparent;width:100%;">
+
+<tbody><tr>
+<td class="at-c textwhite"><b>{{{name3}}}</b>
+</td></tr>
+<tr>
+<td class="at-c bgwhite" style="margin:5px;"><br>
+</td></tr></tbody></table>
+</td></tr>
+<tr style="display:none;">
+<td>
+<table class="roundy" style="background: transparent;width:100%;">
+
+<tbody><tr>
+<td class="at-c textwhite"><b>{{{name4}}}</b>
+</td></tr>
+<tr>
+<td class="at-c bgwhite" style="margin:5px;"><br>
+</td></tr></tbody></table>
+</td></tr>
+<tr style="display:none;">
+<td>
+<table class="roundy" style="background: transparent;width:100%;">
+
+<tbody><tr>
+<td class="at-c textwhite"><b>{{{name5}}}</b>
+</td></tr>
+<tr>
+<td class="at-c bgwhite" style="margin:5px;"><br>
+</td></tr></tbody></table>
+</td></tr>
+<tr>
+<td>
+<table class="roundy" style="display:none;">
+<tbody><tr>
+<td style="width:2%;">
+</td>
+<td style="width:3%;">
+</td>
+<th colspan="2" width="90%" class="at-c roundytop bgl-white">Primary Attribute
+</th>
+<td style="width:3%;">
+</td>
+<td style="width:2%;">
+</td></tr>
+<tr>
+<td colspan="6" width="90px" class="at-c roundytl roundytr bgwhite b-green" style="border-width: 0 0 1px 0;"><b>Category:</b> <a href="https://www.waveshare.com/wiki/Category:OLEDs_/_LCDs" title="Category:OLEDs / LCDs">OLEDs / LCDs</a>, <a href="https://www.waveshare.com/wiki/Category:LCD" title="Category:LCD">LCD</a>, <a href="https://www.waveshare.com/w/index.php?title=Category:Display&amp;action=edit&amp;redlink=1" class="new" title="Category:Display (page does not exist)">e-Paper</a>
+</td></tr>
+<tr style="display:none;">
+<th colspan="3" width="90px" class="at-r bgwhite b-green" style="border-width: 0 0 1px 0;">{{{userDefinedInfo}}}:
+</th>
+<td colspan="3" class="at-l b-green bgwhite" style="border-width: 0 0 1px 0;">{{{userdefinedvalue}}}
+</td></tr>
+<tr style="display:none;">
+<td colspan="6" width="90px" class="at-c roundybl roundybr bgwhite"><b>Brand:</b> Waveshare
+</td></tr></tbody></table>
+</td></tr>
+<tr>
+<td>
+<table class="a-r roundy" style="display:none;">
+<tbody><tr>
+<td style="width:2%;">
+</td>
+<td style="width:3%;">
+</td>
+<th colspan="2" width="90%" class="at-c roundytop bgl-white">Website
+</th>
+<td style="width:3%;">
+</td>
+<td style="width:2%;">
+</td></tr>
+<tr>
+<td colspan="6" width="90px" class="at-c roundytl roundytr bgwhite b-green" style="border-width: 0 0 1px 0;"><b>International:</b> <a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="https://www.waveshare.com/4.2inch-e-Paper-cloud-module.htm">Waveshare website</a>
+</td></tr>
+<tr>
+<td colspan="6" width="90px" class="at-c roundybl roundybr bgwhite"><b>Chinese:</b> <a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="https://www.waveshare.net/shop/4.2inch-e-Paper-Cloud-Module.htm">官方中文站点</a>
+</td></tr></tbody></table>
+</td></tr>
+<tr>
+<td>
+<table class="a-r roundy" style="background: transparent; border-collapse:collapse;width:100%;">
+<tbody><tr>
+<td style="width:2%;">
+</td>
+<td style="width:3%;">
+</td>
+<th colspan="2" width="90%" class="at-c roundytop bgl-white">Onboard Interfaces
+</th>
+<td style="width:3%;">
+</td>
+<td style="width:2%;">
+</td></tr>
+<tr>
+<td colspan="6" width="90px" class="at-l roundy bgwhite b-green" style="border-width: 0 0 1px 0;">
+<table class="roundy bgwhite fulltable" style="text-align:center">
+
+<tbody><tr>
+<td class="roundy bl-gray bw-1" style="width:25%;;"><small><b><a href="https://www.waveshare.com/wiki/Category:SPI_interface" title="Category:SPI interface">SPI</a></b></small>
+</td>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td></tr>
+<tr>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td></tr>
+<tr>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td></tr>
+<tr>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td></tr>
+<tr>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td>
+<td class="roundy bl-gray bw-1" style="width:25%;display:none;"><small></small>
+</td></tr></tbody></table>
+</td></tr></tbody></table>
+</td></tr>
+<tr>
+<td>
+<table class="a-r roundy" style="background: transparent; border-collapse:collapse;width:100%;;display:none;">
+<tbody><tr>
+<td style="width:2%;">
+</td>
+<td style="width:3%;">
+</td>
+<th colspan="2" width="90%" class="at-c roundytop bgl-white">Related Products
+</th>
+<td style="width:3%;">
+</td>
+<td style="width:2%;">
+</td></tr>
+<tr>
+<td colspan="6" width="90px" class="at-l roundy bgwhite b-green" style="border-width: 0 0 1px 0;">
+<ul><li><a href="https://www.waveshare.com/wiki/4.3inch_e-Paper_UART_Module" title="4.3inch e-Paper UART Module">4.3inch e-Paper UART Module</a></li>
+<li><a href="https://www.waveshare.com/wiki/13.3inch_e-Paper_HAT" title="13.3inch e-Paper HAT">13.3inch e-Paper HAT</a></li>
+<li><a href="https://www.waveshare.com/wiki/13.3inch_HDMI_e-Paper" title="13.3inch HDMI e-Paper">13.3inch HDMI e-Paper</a></li>
+<li><a href="https://www.waveshare.com/wiki/12.48inch_e-Paper_Module" title="12.48inch e-Paper Module">12.48inch e-Paper Module</a></li>
+<li><a href="https://www.waveshare.com/wiki/12.48inch_e-Paper_Module_(B)" title="12.48inch e-Paper Module (B)">12.48inch e-Paper Module (B)</a></li>
+<li><a href="https://www.waveshare.com/wiki/10.3inch_HDMI_e-Paper" title="10.3inch HDMI e-Paper">10.3inch HDMI e-Paper</a></li>
+<li><a href="https://www.waveshare.com/wiki/10.3inch_e-Paper_HAT_(D)" title="10.3inch e-Paper HAT (D)">10.3inch e-Paper HAT (D)</a></li>
+<li><a href="https://www.waveshare.com/wiki/10.3inch_e-Paper_HAT" title="10.3inch e-Paper HAT">10.3inch e-Paper HAT</a></li>
+<li><a href="https://www.waveshare.com/wiki/9.7inch_HDMI_e-Paper" title="9.7inch HDMI e-Paper">9.7inch HDMI e-Paper</a></li>
+<li><a href="https://www.waveshare.com/wiki/9.7inch_e-Paper_HAT" title="9.7inch e-Paper HAT">9.7inch e-Paper HAT</a></li>
+<li><a href="https://www.waveshare.com/wiki/7.8inch_e-Paper_HAT" title="7.8inch e-Paper HAT">7.8inch e-Paper HAT</a></li>
+<li><a href="https://www.waveshare.com/wiki/7.8inch_HDMI_e-Paper" title="7.8inch HDMI e-Paper">7.8inch HDMI e-Paper</a></li>
+<li><a href="https://www.waveshare.com/wiki/7.5inch_HD_e-Paper_HAT" title="7.5inch HD e-Paper HAT">7.5inch HD e-Paper HAT</a></li>
+<li><a href="https://www.waveshare.com/wiki/7.5inch_HD_e-Paper_HAT_(B)" title="7.5inch HD e-Paper HAT (B)">7.5inch HD e-Paper HAT (B)</a></li>
+<li><a href="https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT" title="7.5inch e-Paper HAT">7.5inch e-Paper HAT</a></li>
+<li><a href="https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT_(B)" title="7.5inch e-Paper HAT (B)">7.5inch e-Paper HAT (B)</a></li>
+<li><a href="https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT_(C)" title="7.5inch e-Paper HAT (C)">7.5inch e-Paper HAT (C)</a></li>
+<li><a href="https://www.waveshare.com/wiki/7.5inch_e-Paper_(G)" class="mw-redirect" title="7.5inch e-Paper (G)">7.5inch e-Paper (G)</a></li>
+<li><a href="https://www.waveshare.com/wiki/7.5inch_NFC-Powered_e-Paper" title="7.5inch NFC-Powered e-Paper">7.5inch NFC-Powered e-Paper</a></li>
+<li><a href="https://www.waveshare.com/wiki/7.5inch_NFC-Powered_HD_e-Paper" title="7.5inch NFC-Powered HD e-Paper">7.5inch NFC-Powered HD e-Paper</a></li>
+<li><a href="https://www.waveshare.com/wiki/6inch_e-Paper_HAT" title="6inch e-Paper HAT">6inch e-Paper HAT</a></li>
+<li><a href="https://www.waveshare.com/wiki/6inch_HD_e-Paper_HAT" title="6inch HD e-Paper HAT">6inch HD e-Paper HAT</a></li>
+<li><a href="https://www.waveshare.com/wiki/5.83inch_e-Paper_HAT" title="5.83inch e-Paper HAT">5.83inch e-Paper HAT</a></li>
+<li><a href="https://www.waveshare.com/wiki/5.83inch_e-Paper_HAT_(B)" title="5.83inch e-Paper HAT (B)">5.83inch e-Paper HAT (B)</a></li>
+<li><a href="https://www.waveshare.com/wiki/5.83inch_e-Paper_HAT_(C)" title="5.83inch e-Paper HAT (C)">5.83inch e-Paper HAT (C)</a></li>
+<li><a href="https://www.waveshare.com/wiki/5.65inch_e-Paper_Module_(F)" title="5.65inch e-Paper Module (F)">5.65inch e-Paper Module (F)</a></li>
+<li><a class="mw-selflink selflink">4.2inch e-Paper Cloud Module</a></li>
+<li><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Module" title="4.2inch e-Paper Module">4.2inch e-Paper Module</a></li>
+<li><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Module_(B)" title="4.2inch e-Paper Module (B)">4.2inch e-Paper Module (B)</a></li>
+<li><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Module_(C)" title="4.2inch e-Paper Module (C)">4.2inch e-Paper Module (C)</a></li>
+<li><a href="https://www.waveshare.com/wiki/4.2inch_NFC-Powered_e-Paper" title="4.2inch NFC-Powered e-Paper">4.2inch NFC-Powered e-Paper</a></li>
+<li><a href="https://www.waveshare.com/wiki/4.01inch_e-Paper_Module_(F)" class="mw-redirect" title="4.01inch e-Paper Module (F)">4.01inch e-Paper (F)</a></li>
+<li><a href="https://www.waveshare.com/wiki/4.01inch_e-Paper_HAT_(F)" title="4.01inch e-Paper HAT (F)">4.01inch e-Paper HAT (F)</a></li>
+<li><a href="https://www.waveshare.com/wiki/3.7inch_e-Paper_HAT" title="3.7inch e-Paper HAT">3.7inch e-Paper</a></li>
+<li><a href="https://www.waveshare.com/wiki/3.7inch_e-Paper_HAT" title="3.7inch e-Paper HAT">3.7inch e-Paper HAT</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.9inch_e-Paper_Module" title="2.9inch e-Paper Module">2.9inch e-Paper Module</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.9inch_e-Paper_Module_(B)" title="2.9inch e-Paper Module (B)">2.9inch e-Paper Module (B)</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.9inch_e-Paper_Module_(C)" title="2.9inch e-Paper Module (C)">2.9inch e-Paper Module (C)</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.9inch_e-Paper_HAT_(D)" title="2.9inch e-Paper HAT (D)">2.9inch e-Paper HAT (D)</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.9inch_Touch_e-Paper_HAT" title="2.9inch Touch e-Paper HAT">2.9inch Touch e-Paper HAT</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.9inch_NFC-Powered_e-Paper" title="2.9inch NFC-Powered e-Paper">2.9inch NFC-Powered e-Paper</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.7inch_NFC-Powered_e-Paper_Module" title="2.7inch NFC-Powered e-Paper Module">2.7inch NFC-Powered e-Paper Module</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.7inch_e-Paper_HAT" title="2.7inch e-Paper HAT">2.7inch e-Paper HAT</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.7inch_e-Paper_HAT_(B)" title="2.7inch e-Paper HAT (B)">2.7inch e-Paper HAT (B)</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.66inch_e-Paper_Module" title="2.66inch e-Paper Module"> 2.66.inch e-Paper</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.66inch_e-Paper_Module" title="2.66inch e-Paper Module">2.66inch e-Paper Module</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.66inch_e-Paper_Module_(B)" title="2.66inch e-Paper Module (B)"> 2.66inch e-Paper (B)</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.66inch_e-Paper_Module_(B)" title="2.66inch e-Paper Module (B)">2.66inch e-Paper Module (B)</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.13inch_e-Paper_Cloud_Module" title="2.13inch e-Paper Cloud Module">2.13inch e-Paper Cloud Module</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT" title="2.13inch e-Paper HAT">2.13inch e-Paper HAT</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(B)" title="2.13inch e-Paper HAT (B)">2.13inch e-Paper HAT (B)</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(C)" title="2.13inch e-Paper HAT (C)">2.13inch e-Paper HAT (C)</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_(D)" title="2.13inch e-Paper HAT (D)">2.13inch e-Paper HAT (D)</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.13inch_Touch_e-Paper_HAT" title="2.13inch Touch e-Paper HAT">2.13inch Touch e-Paper HAT</a></li>
+<li><a href="https://www.waveshare.com/wiki/2.13inch_NFC-Powered_e-Paper" title="2.13inch NFC-Powered e-Paper">2.13inch NFC-Powered e-Paper</a></li>
+<li><a href="https://www.waveshare.com/wiki/1.54inch_NFC-Powered_e-Paper_(BB)" title="1.54inch NFC-Powered e-Paper (BB)">1.54inch NFC-Powered e-Paper (BB)</a></li>
+<li><a href="https://www.waveshare.com/wiki/1.54inch_NFC-Powered_e-Paper_(BW)" class="mw-redirect" title="1.54inch NFC-Powered e-Paper (BW)">1.54inch NFC-Powered e-Paper (BW)</a></li>
+<li><a href="https://www.waveshare.com/wiki/1.54inch_e-Paper_Module" title="1.54inch e-Paper Module">1.54inch e-Paper Module</a></li>
+<li><a href="https://www.waveshare.com/wiki/1.54inch_e-Paper_Module_(B)" title="1.54inch e-Paper Module (B)">1.54inch e-Paper Module (B)</a></li>
+<li><a href="https://www.waveshare.com/wiki/1.54inch_e-Paper_Module_(C)" title="1.54inch e-Paper Module (C)">1.54inch e-Paper Module (C)</a></li>
+<li><a href="https://www.waveshare.com/wiki/1.02inch_e-paper_Module" title="1.02inch e-paper Module">1.02inch e-paper Module</a></li>
+<li><a href="https://www.waveshare.com/wiki/E-Paper_Driver_HAT" title="E-Paper Driver HAT">e-Paper Driver HAT</a></li>
+<li><a href="https://www.waveshare.com/wiki/EINK-DISP-103" title="EINK-DISP-103">EINK-DISP-103</a></li>
+<li><a href="https://www.waveshare.com/wiki/E-Paper_Shield" title="E-Paper Shield">E-Paper Shield</a></li>
+<li><a href="https://www.waveshare.com/wiki/E-Paper_ESP8266_Driver_Board" title="E-Paper ESP8266 Driver Board">e-Paper ESP8266 Driver Board</a></li>
+<li><a href="https://www.waveshare.com/wiki/E-Paper_ESP32_Driver_Board" title="E-Paper ESP32 Driver Board">E-Paper ESP32 Driver Board</a></li></ul>
+</td></tr></tbody></table>
+</td></tr></tbody></table>
+
+
+<h1><span class="mw-headline" id="Overview">Overview</span></h1>
+<hr>
+<p>You can connect to the device via wifi with port number 6868, and update display with commands.<br>
+You can configure the devices via wifi or Bluetooth, if you are the first time configure the deivce, only the Bluetooth is avaialble.<br>
+<font color="red"><big><b>The firmware of the 4,2inch cannot be reprogrammed by used because the flash is locked.<br></b>
+You need to wakeup the device by button<b></b></big></font>
+</p>
+<h3><span class="mw-headline" id="Features">Features</span></h3>
+<ul><li>Suitable as equipment labels, shelf labels, information storage, etc.</li>
+<li>Integrates SW6106 chip, supports multiple quick charge protocols including PD / QC / FCP / PE / SFCP, etc.</li>
+<li>Allows the user to control the display content via a remote server, convenient and flexible</li>
+<li>The voltage detection circuit can detect the battery circuit to avoid over discharge.</li>
+<li>ID support, make it easy to centrally manage and track the modules</li>
+<li>Provides Android APP for configuring and managing the modules</li>
+<li>No backlight, keeps displaying last content for a long time even when power down</li>
+<li>Long battery life, basically power consumption is only required for refreshing</li>
+<li>Provide complete supporting information manual</li></ul>
+<h3><span class="mw-headline" id="Specification">Specification</span></h3>
+<ul><li>Power supply：Battery</li>
+<li>Resolution：400 x 300</li>
+<li>Pixel pitch：0.212 × 0.212</li>
+<li>Display color：Black, White</li>
+<li>Refresh time：4s</li>
+<li>Viewing Angle：&gt;170°</li>
+<li>Outline Dimensions：96.5mm × 85mm</li>
+<li>Display Size：84.8mm × 63.6mm</li>
+<li>Maximum refresh times (battery capacity: 1000mah): 1500+</li></ul>
+</div>
+<div class="tabbertab" title="User Guidies">
+<p><big>
+<font color="red"><b>You can download and install the APP by scanning the QR codes</b></font><br>
+<a href="https://www.waveshare.com/wiki/File:Cloud_APP.png" class="image"><img alt="Cloud APP.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_APP.png" decoding="async" loading="lazy" width="400" height="400" data-file-width="298" data-file-height="298"></a>
+</big></p><big>
+<h2><span class="mw-headline" id="Lead_Information"><big><big><b>Lead Information</b></big></big></span></h2>
+<p>Every time the device start, it will do partial refresh and display status icons.<br>
+Hereby provide the refrence of icons.<br>
+</p>
+<table style="width:400px;">
+
+<tbody><tr>
+<td><a href="https://www.waveshare.com/wiki/File:Cloud_ESP32_e-Paper_Board_wait.png" class="image"><img alt="Cloud ESP32 e-Paper Board wait.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_ESP32_e-Paper_Board_wait.png" decoding="async" loading="lazy" width="32" height="32" data-file-width="32" data-file-height="32"></a></td>
+<td><a href="https://www.waveshare.com/wiki/File:Cloud_ESP32_e-Paper_Board_set.png" class="image"><img alt="Cloud ESP32 e-Paper Board set.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_ESP32_e-Paper_Board_set.png" decoding="async" loading="lazy" width="32" height="32" data-file-width="32" data-file-height="32"></a></td>
+<td><a href="https://www.waveshare.com/wiki/File:Cloud_ESP32_e-Paper_Board_batter.png" class="image"><img alt="Cloud ESP32 e-Paper Board batter.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_ESP32_e-Paper_Board_batter.png" decoding="async" loading="lazy" width="32" height="32" data-file-width="32" data-file-height="32"></a></td>
+<td><a href="https://www.waveshare.com/wiki/File:Cloud_ESP32_e-Paper_Board_wifi.png" class="image"><img alt="Cloud ESP32 e-Paper Board wifi.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_ESP32_e-Paper_Board_wifi.png" decoding="async" loading="lazy" width="32" height="32" data-file-width="32" data-file-height="32"></a></td>
+<td><a href="https://www.waveshare.com/wiki/File:Cloud_ESP32_e-Paper_Board_wifi_connect.png" class="image"><img alt="Cloud ESP32 e-Paper Board wifi connect.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_ESP32_e-Paper_Board_wifi_connect.png" decoding="async" loading="lazy" width="32" height="32" data-file-width="32" data-file-height="32"></a>
+</td></tr>
+<tr>
+<td>Waiting</td>
+<td>Setting</td>
+<td>Low Voltage</td>
+<td>WIFI</td>
+<td>Host
+</td></tr></tbody></table>
+<ul><li>Waiting: The device is waiting for commands.</li>
+<li>Setting: Setting is finished.</li>
+<li>Low Voltage: The voltage of battareis is lower than warnning value.</li>
+<li>WIFI: The wifi is connected.</li>
+<li>Host: The devices is connected to target host by IP address.</li></ul>
+<ul><li>Generally, you should press the button to wake up the device and check the icons. The warnning voltage is 3600mv, once the voltage is 150mv lower than warnning voltage (3450mv), the devices will shutdown automatically to protect the stable of the whole system.</li></ul>
+<h1><span class="mw-headline" id="Configure_Device">Configure Device</span></h1>
+<hr>
+<h2><span class="mw-headline" id="First_Setup">First Setup</span></h2>
+<p>If you didn't configure the device before, you should configure the device by APP after pressing the Wakeup button to update the display①. Please refer to  <a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#1.4_Configure_Device_by_APP">#1.4 Configure Device by APP</a> to configure the device.②<br>
+Note：<br>
+①If the device isn't configured, Waiting icon is displaed in the top-right area. If the Low Voltage icon is displayed without Waiting, it means that the batteris is less than 3450mv and it is going to shutdown.<br>
+②If the device doesn't connect to Bluetooth, it will shutdown after 90s after booting and refreshing the display. 
+</p>
+<h2><span class="mw-headline" id="Reconfiguration">Reconfiguration</span></h2>
+<p>If the device was configured, the device will update and display Setted icon in the top-right area① after pressing wakeup button. The Bluetooth is disabled by default, if required, you should hold the wakeup button for 5s at least to enable the Bluetooth②. The updating process of device will not be interrupted③ while enabling the Bluetooth. After enabling the Bluetooth, you can re-configure the device by referring to <a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#1.4_Configure_Device_by_APP">#1.4 Configure Device by APP</a> ④.<br>
+注：<br>
+①The update time of the device is determined by the speed of WIFI, It should less than 30s as we test.。<br>
+②You can hold the wake-up button until your phone scan the device via Bluetooth. Otherwise, the device auto-shutdown if the Bluetooth is disconnected.。<br>
+③If you enable the Bluetooth of the device, it will try to connect to master (phone) in 30s if the shutdown command is received via wifi. If the device is connected to the phone by Bluetooth, it will keep waking, otherwise, it will be turned off after 30s.<br>
+④You should reboot the device after configuration to make the configuration effect. Please do not reboot the device when transmitting data via WIFI, it will cost data loss.
+</p>
+<h2><span class="mw-headline" id="APP_Description">APP Description</span></h2>
+<dl><dd><dl><dd><a href="https://www.waveshare.com/wiki/File:Cloud_Epd_app_1.png" class="image"><img alt="Cloud Epd app 1.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_Epd_app_1.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/b/bd/Cloud_Epd_app_1.png 1.5x" data-file-width="400" data-file-height="866"></a>
+<dl><dd><dl><dd><b><big>Bluetooth Connectiono Button and the information</big></b> &lt;br\&gt;</dd></dl></dd></dl></dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_Epd_app_2.png" class="image"><img alt="Cloud Epd app 2.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_Epd_app_2.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/5/59/Cloud_Epd_app_2.png 1.5x" data-file-width="400" data-file-height="866"></a>
+<dl><dd><b><big>Device ID: for distinguish devices</big></b><br></dd></dl></dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_Epd_app_3.png" class="image"><img alt="Cloud Epd app 3.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_Epd_app_3.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/4/43/Cloud_Epd_app_3.png 1.5x" data-file-width="400" data-file-height="866"></a></dd>
+<dd><b><big>WIFI_SSID</big></b>&lt;br\&gt;</dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_Epd_app_4.png" class="image"><img alt="Cloud Epd app 4.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_Epd_app_4.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/1/16/Cloud_Epd_app_4.png 1.5x" data-file-width="400" data-file-height="866"></a>
+<dl><dd><b><big>Check the current SSID connected</big></b><br></dd></dl></dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_Epd_app_5.png" class="image"><img alt="Cloud Epd app 5.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_Epd_app_5.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/7/7a/Cloud_Epd_app_5.png 1.5x" data-file-width="400" data-file-height="866"></a>
+<dl><dd><dl><dd><dl><dd><b><big>WIFI_Password</big></b>&lt;br\&gt;</dd></dl></dd></dl></dd></dl></dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_Epd_app_6.png" class="image"><img alt="Cloud Epd app 6.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_Epd_app_6.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/f/fa/Cloud_Epd_app_6.png 1.5x" data-file-width="400" data-file-height="866"></a>
+<dl><dd><b><big>Host_IP, The IP of host, for example, the IP of Raspberry Pi.</big></b>&lt;br\&gt;</dd></dl></dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_Epd_app_8.png" class="image"><img alt="Cloud Epd app 8.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_Epd_app_8.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/a/a7/Cloud_Epd_app_8.png 1.5x" data-file-width="400" data-file-height="866"></a></dd>
+<dd><b><big>Device_IP: This is used to set the static IP. If you enable DHCP, the static IP is unavailable</big></b>&lt;br\&gt;</dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_Epd_app_7.png" class="image"><img alt="Cloud Epd app 7.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_Epd_app_7.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/e/ed/Cloud_Epd_app_7.png 1.5x" data-file-width="400" data-file-height="866"></a></dd></dl></dd>
+<dd><b><big>Device_Password, you should input the device password to vertify if the device is locked.</big></b>&lt;br\&gt;</dd></dl>
+<p>Note: The default device password of the Raspberry Pi example is 123456. If you lock the device you have to unlock it with password 123456, otherwise, the device cannot work.&lt;br\&gt;
+</p>
+<dl><dd><dl><dd><a href="https://www.waveshare.com/wiki/File:Cloud_Epd_app_9.png" class="image"><img alt="Cloud Epd app 9.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_Epd_app_9.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/a/a8/Cloud_Epd_app_9.png 1.5x" data-file-width="400" data-file-height="866"></a></dd></dl></dd></dl>
+<p><b><big>Warning_voltage: If the voltage of batteries is less than the warning voltage, the device will display the warning icon. If the battery is 150mV lower than the warning voltage, the device will shutdown automatically.</big></b>&lt;br\&gt;
+</p>
+<dl><dd><dl><dd><a href="https://www.waveshare.com/wiki/File:Cloud_Epd_app_10.png" class="image"><img alt="Cloud Epd app 10.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_Epd_app_10.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/5/5e/Cloud_Epd_app_10.png 1.5x" data-file-width="400" data-file-height="866"></a></dd>
+<dd><b><big>Load the configuration saved</big></b><br></dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_Epd_app_11.png" class="image"><img alt="Cloud Epd app 11.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_Epd_app_11.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/b/b6/Cloud_Epd_app_11.png 1.5x" data-file-width="400" data-file-height="866"></a></dd>
+<dd><b><big> Save the current configuration, you can save up to four sets of configuration</big></b>&lt;br\&gt;</dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_Epd_app_12.png" class="image"><img alt="Cloud Epd app 12.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_Epd_app_12.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/b/bb/Cloud_Epd_app_12.png 1.5x" data-file-width="400" data-file-height="866"></a>
+<dl><dd><dl><dd><b><big>Upload the current configuration to device.</big></b><br></dd></dl></dd></dl></dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_Epd_app_13.png" class="image"><img alt="Cloud Epd app 13.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_Epd_app_13.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/1/1d/Cloud_Epd_app_13.png 1.5x" data-file-width="400" data-file-height="866"></a>
+<dl><dd><dl><dd><b><big> Formating: Clean the current configuration</big></b><br></dd></dl></dd></dl></dd></dl></dd></dl>
+<h2><span class="mw-headline" id="Configure_Device_by_APP">Configure Device by APP</span></h2>
+<dl><dd><dl><dd>Ⅰ. Open APP（APP will auto-save the last configuration information）</dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_ESP32_e-Paper_Board_manual_1.png" class="image"><img alt="Cloud ESP32 e-Paper Board manual 1.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_ESP32_e-Paper_Board_manual_1.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/4/40/Cloud_ESP32_e-Paper_Board_manual_1.png 1.5x" data-file-width="400" data-file-height="866"></a></dd>
+<dd>Ⅱ. Click the Bluetooth CONNECTION button, the default Bluetooth device is WaveShare_EPD or the Device ID configured.</dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_ESP32_e-Paper_Board_manual_2.png" class="image" title="Unpaired"><img alt="Unpaired" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_ESP32_e-Paper_Board_manual_2.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/d/dc/Cloud_ESP32_e-Paper_Board_manual_2.png 1.5x" data-file-width="400" data-file-height="866"></a>
+<dl><dd><dl><dd><dl><dd><dl><dd><dl><dd>Unparied</dd></dl></dd></dl></dd></dl></dd></dl></dd></dl></dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_ESP32_e-Paper_Board_manual_3.png" class="image" title="Paried"><img alt="Paried" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_ESP32_e-Paper_Board_manual_3.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/b/b8/Cloud_ESP32_e-Paper_Board_manual_3.png 1.5x" data-file-width="400" data-file-height="866"></a>
+<dl><dd><dl><dd><dl><dd><dl><dd><dl><dd>Paried</dd></dl></dd></dl></dd></dl></dd></dl></dd></dl></dd>
+<dd>Ⅲ. Choose the device, for example, connect the WaveShare_EPD. If you are the first time to connect the WaveShare_EPD device, it should be paired first.</dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_ESP32_e-Paper_Board_manual_4.png" class="image"><img alt="Cloud ESP32 e-Paper Board manual 4.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_ESP32_e-Paper_Board_manual_4.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/b/b7/Cloud_ESP32_e-Paper_Board_manual_4.png 1.5x" data-file-width="400" data-file-height="866"></a></dd>
+<dd>Ⅳ. Modify the configuration information and Upload(If you have configured the password, you need to input the password as well.)</dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_ESP32_e-Paper_Board_manual_5.png" class="image"><img alt="Cloud ESP32 e-Paper Board manual 5.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_ESP32_e-Paper_Board_manual_5.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/3/36/Cloud_ESP32_e-Paper_Board_manual_5.png 1.5x" data-file-width="400" data-file-height="866"></a></dd>
+<dd>Ⅴ. The APP will disconnect and reboot the device if the configuration is uploaded successfully.</dd>
+<dd><a href="https://www.waveshare.com/wiki/File:Cloud_ESP32_e-Paper_Board_manual_6.png" class="image"><img alt="Cloud ESP32 e-Paper Board manual 6.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_ESP32_e-Paper_Board_manual_6.png" decoding="async" loading="lazy" width="300" height="650" srcset="/w/upload/1/1d/Cloud_ESP32_e-Paper_Board_manual_6.png 1.5x" data-file-width="400" data-file-height="866"></a></dd>
+<dd>Note: We recommend you set static IP for the device.</dd></dl></dd></dl>
+<h1><span class="mw-headline" id="Communicating_Protocol">Communicating Protocol</span></h1>
+<hr>
+<p>Communicating is divided into two modes: Command mode and the data mode. Command mode is used for sending commands. data Mode is used for sending image data to e-Paper.
+</p>
+<h4><span class="mw-headline" id="Command_Format"><big><b>Command Format</b></big></span></h4>
+<p>‘;’+<font color="red">Command（+Data）</font>+'/'+Parity
+</p>
+<h4><span class="mw-headline" id="Data_Format"><big><b>Data Format</b></big></span></h4>
+<p>0x57+<font color="red">4Byte addr+ 4Byte len +1Byte num + len Byte data </font>+Verify
+</p>
+<h4><span class="mw-headline" id="Return_Format"><big><b>Return Format</b></big></span></h4>
+<p>'$'+Data+'#'
+The format of response of Command and Data are the same
+</p><p>Note:<font color="red">The Verity is the XOR result of data which is marked in red </font>
+</p>
+<h3><span id="Command_Mode："></span><span class="mw-headline" id="Command_Mode.EF.BC.9A"><b>Command Mode：</b></span></h3>
+<h4><span class="mw-headline" id="Command_Format_2">Command Format</span></h4>
+<dl><dd><dl><dd>‘;’+<font color="red">Comamnd（+Data）</font>+'/'+Verify</dd></dl></dd></dl>
+<h4><span id="Commands_(locked)"></span><span class="mw-headline" id="Commands_.28locked.29">Commands (locked)</span></h4>
+<table border="1;" style="width:900px;">
+
+<tbody><tr style="background:#A0A0A0; color:white;" align="center">
+<td>Comamnd</td>
+<td>Desctiption</td>
+<td>Return
+</td></tr>
+<tr align="center">
+<td>'C'</td>
+<td>Check if the device is locked</td>
+<td>Parity bit + Flag bit 0 or 1, 0: unclocked, 1: locked.
+</td></tr>
+<tr align="center">
+<td>‘N' + Device password</td>
+<td>Unclocked the device</td>
+<td>Parity bit + Flag bit 0 or 1, 0: failed to lock; 1: lock the device successffully.
+</td></tr>
+<tr align="center">
+<td>'G'</td>
+<td>Get the ID of device</td>
+<td>ID
+</td></tr>
+<tr align="center">
+<td>'r' + Sleep time (&lt;9999)</td>
+<td>Set the device to sleep mode</td>
+<td>Parity bit
+</td></tr></tbody></table>
+<p><b>PS</b>: The sleep command is only available in 2.13inch e-Paper Cloud Module.
+</p>
+<dl><dd>These commands can be used if the device is locked.</dd></dl>
+<h4><span id="Comamnds_(unlocked)"></span><span class="mw-headline" id="Comamnds_.28unlocked.29">Comamnds (unlocked)</span></h4>
+<table border="1;" style="width:900px;">
+
+<tbody><tr style="background:#A0A0A0; color:white;" align="center">
+<td>Command</td>
+<td>Description</td>
+<td>Return
+</td></tr>
+<tr align="center">
+<td>'0' + name</td>
+<td>Modify the ID</td>
+<td>Parity bit
+</td></tr>
+<tr align="center">
+<td>'1' +  IP address</td>
+<td>Modify the IP address of Host</td>
+<td>Parity bit
+</td></tr>
+<tr align="center">
+<td>‘2’+SSID</td>
+<td>Modify the WIFI SSID</td>
+<td>Parity bit
+</td></tr>
+<tr align="center">
+<td>‘3’+password</td>
+<td>Modify the WIFI password</td>
+<td>Parity bit
+</td></tr>
+<tr align="center">
+<td>‘P’+userpassword</td>
+<td>Modify the device password</td>
+<td>Parity bit
+</td></tr>
+<tr align="center">
+<td>'L' +'0' / 'L' + '1'</td>
+<td>Set the device lock; 1 to lock and 0 to unlock</td>
+<td>Parity bit
+</td></tr>
+<tr align="center">
+<td>'s' + '0' /'s' + '1'</td>
+<td>Set the flag bit, 0 to disable and 1 to enable</td>
+<td>Parity bit
+</td></tr>
+<tr align="center">
+<td>'F'</td>
+<td>Enter data mode</td>
+<td>Parity bit
+</td></tr>
+<tr align="center">
+<td>'B'</td>
+<td>Open Bluetooth</td>
+<td>Parity bit
+</td></tr>
+<tr align="center">
+<td>'b'</td>
+<td>Check the current voltage of battery</td>
+<td>Parity bit  +  voltage of battery (mv)
+</td></tr>
+<tr align="center">
+<td>'S'</td>
+<td>Shutdown</td>
+<td>Parity bit
+</td></tr>
+<tr align="center">
+<td>'R'</td>
+<td>Restart</td>
+<td>Parity bit
+</td></tr></tbody></table>
+<dl><dd>These commands can be used when the device is unlocked.</dd></dl>
+<h3><span id="Data_Mode："></span><span class="mw-headline" id="Data_Mode.EF.BC.9A"><b>Data Mode：</b></span></h3>
+<h4><span class="mw-headline" id="Data_Format_2">Data Format</span></h4>
+<dl><dd><dl><dd>0x57+<font color="red">4Byte addr+ 4Byte len +1Byte num + len Byte data </font>+Verify</dd></dl></dd></dl>
+<table border="1;" style="width:900px;">
+
+<tbody><tr style="background:#A0A0A0; color:white;" align="center">
+<td>Data</td>
+<td>Lebs</td>
+<td>Content
+</td></tr>
+<tr align="center">
+<td>addr</td>
+<td>4byte</td>
+<td>Address if data
+</td></tr>
+<tr align="center">
+<td>len</td>
+<td>4byte</td>
+<td>Length os data
+</td></tr>
+<tr align="center">
+<td>num</td>
+<td>1byte</td>
+<td>The frame number of current sector
+</td></tr>
+<tr align="center">
+<td>data</td>
+<td>len byte</td>
+<td>The data transmitted
+</td></tr></tbody></table>
+<h4><span id="Note："></span><span class="mw-headline" id="Note.EF.BC.9A">Note：</span></h4>
+<ol><li>Recommend you to transmit the frames with same lenght</li>
+<li><font color="red"><b>The size of frame transmitted should not larger than 1100Byte, otherwise it cose data lose.</b></font></li>
+<li>num should be static variable because it may be invalid because of version update.</li>
+<li>The data frame doesn't have a stop bit, you need to wait for the verity data before sending the next frame, otherwise, it causes failure.</li>
+<li>The e-Paper will update automatically and exit from update mode when the addr and len are 0.</li></ol>
+</big><p><big>For mare detailes, please refer to the python3 examples provided.<br>
+</big>
+</p>
+</div>
+<div class="tabbertab" title="RPI User Guides">
+<h1><span class="mw-headline" id="Using_Guides_for_RPI">Using Guides for RPI</span></h1>
+<hr>
+<h2><span class="mw-headline" id="Install_Libraries">Install Libraries</span></h2>
+<pre>#python3
+sudo apt-get update
+sudo apt-get install python3-pip
+sudo apt-get install python3-pil
+sudo apt-get install python3-tqdm
+sudo apt-get install python3-numpy
+sudo apt-get install python3-progressbar
+</pre>
+<h2><span class="mw-headline" id="Download_the_demo_codes">Download the demo codes</span></h2>
+<p>Open a terminal and runthe following commands：<br>
+</p>
+<pre>sudo apt-get install p7zip-full
+sudo wget https://www.waveshare.com/w/upload/2/2e/Cloud_RPI.7z
+7z x Cloud_RPI.7z
+cd Cloud_RPI 
+</pre>
+<h2><span class="mw-headline" id="python">python</span></h2>
+<ul><li>The demo codes can only support python3.</li>
+<li>Please go to the directory of Cloud_RPI and run the command:</li></ul>
+<pre>#This code is used to climb the picture of the Waveshare website and transmit the image data to the slave device.
+sudo python3 ./examples/display_WS.py 
+#The codes will draw figures and send the image data to the slave device.
+sudo python3 ./examples/display_EPD.py 
+</pre>
+<h1><span class="mw-headline" id="API_Description">API Description</span></h1>
+<hr>
+<p>There are three directories in lib,http_get、tcp_server和waveshare_epd, They are used to climb HTTP pictures, TCP service, and the functions of e-Paper. <br>
+<a href="https://www.waveshare.com/wiki/File:Cloud_ESP32_e-Paper_Board_manual_10.png" class="image"><img alt="Cloud ESP32 e-Paper Board manual 10.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_ESP32_e-Paper_Board_manual_10.png" decoding="async" loading="lazy" width="800" height="123" data-file-width="672" data-file-height="103"></a>
+</p>
+<h2><span class="mw-headline" id="tcp_sver.py">tcp_sver.py</span></h2>
+<p>Path:Cloud_RPI/lib/tcp_server <br>
+Vreate a tcp_server class in tcp_sver.py file. You need to inherits the class and refactor the handle function when using.
+</p>
+<pre>def handle(self)
+</pre>
+<p>Every time the new client connected, it should call the handle function.
+</p>
+<h3><span class="mw-headline" id="Receive_Message"><b>Receive Message</b></span></h3>
+<pre>def Get_msg(self)
+</pre>
+<table class="wikitable">
+
+<tbody><tr>
+<th>Command</th>
+<th>Return
+</th></tr>
+<tr>
+<td>'$'+Data+'#'</td>
+<td>Data
+</td></tr></tbody></table>
+<h3><span class="mw-headline" id="Send_Command"><b>Send Command</b></span></h3>
+<pre>def Send_cmd(self,cmd)
+</pre>
+<p>Parameter cmd is the command sent<br>
+</p>
+<table class="wikitable">
+
+<tbody><tr>
+<th></th>
+<th>Command
+</th></tr>
+<tr>
+<td>cmd</td>
+<td>‘;’+cmd+'/'+Parity
+</td></tr></tbody></table>
+<h3><span class="mw-headline" id="Sent_data"><b>Sent data</b></span></h3>
+<pre>def Send_data(self,data)
+</pre>
+<p>The parameter data is message transmitte (inlcuded addree and lenghta nd so on) data.<br>
+</p>
+<table class="wikitable">
+
+<tbody><tr>
+<th></th>
+<th>Command
+</th></tr>
+<tr>
+<td>data</td>
+<td>0x57+data+ Parity
+</td></tr></tbody></table>
+<h3><span class="mw-headline" id="Set_suze"><b>Set suze</b></span></h3>
+<pre>def set_size(self,w,h)
+</pre>
+<p>w: The width of image; h: The height of image.<br>
+Take bicolor e-Paper as example, 1 bit stands of one pixel, then you we gets<br>
+</p>
+<table class="wikitable">
+
+<tbody><tr>
+<th>Len of data=Width of image(w)*Height of image(h)/8
+</th></tr></tbody></table>
+<p><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Module" title="4.2inch e-Paper Module"> Refer to 4.2inch e-Paper Module</a>
+</p>
+<h3><span class="mw-headline" id="Update_function"><b>Update function</b></span></h3>
+<pre>def flush_buffer(self,DATA)
+</pre>
+<p>DATA; The image data. the image data can be get by the getbuffer function.<br>
+</p>
+<table class="wikitable">
+
+<tbody><tr>
+<th>Paramter</th>
+<th>Send times</th>
+<th>Lenght of every frame（len）</th>
+<th>Content
+</th>
+<td>DATA(Image data)</td>
+<td>Total lenght of image data/lenght of singal frame（len）</td>
+<td>1024 Byte（Configurable）</td>
+<td>0x57+4 Byte addr+ 4 Byte len +1 Byte num + len Byte data+Parity
+</td></tr></tbody></table>
+<p><font color="red"><b>The lenght of singal transmittion should less than 1100 Byte, or it will cause data loss.</b></font><br>
+</p><p><br>
+</p>
+<h3><span class="mw-headline" id="Check_voltage_of_battery"><b>Check voltage of battery</b></span></h3>
+<ul><li>Get the current voltage</li></ul>
+<pre>def check_batter(self)
+</pre>
+<h2><span class="mw-headline" id="http_get.py">http_get.py</span></h2>
+<p>Path：Cloud_RPI/lib/http_get<br>
+</p>
+<ul><li>Download picture</li></ul>
+<pre>def Get_PNG(Url,Name)
+</pre>
+<p>This function is used to download the picture from Url and save it to the current directory with Name
+</p>
+<h2><span class="mw-headline" id="epd4in2.py">epd4in2.py</span></h2>
+<p>Path：Cloud_RPI/lib/waveshare_epd<br>
+</p>
+<ul><li>Convert the picture to image data.</li></ul>
+<pre>def getbuffer(self, image):
+</pre>
+</div>
+<div class="tabbertab" title="Windows User Guides">
+<h1><span class="mw-headline" id="Configure_Windows">Configure Windows</span></h1>
+<hr>
+<p>This guide is made in Windows 10<br>
+</p>
+<ul><li>Note：</li></ul>
+<ol><li>Please make sure that you have installed python3 on your Windows PC and the default version is python3 if you installed multiple versions.<br></li>
+<li>You may need to close the firewall to make the python work.</li></ol>
+<h2><span class="mw-headline" id="Install_libraries_2">Install libraries</span></h2>
+<p>Open a CMD or  Powershell to install libraries with the following commands:
+</p>
+<pre>#python3
+python -m pip install tqdm
+python -m pip install pillow
+python -m pip install numpy
+python -m pip install pypiwin32
+python -m pip install progressbar
+</pre>
+<h2><span class="mw-headline" id="Download_demo_codes">Download demo codes</span></h2>
+<p>Download the <a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="https://www.waveshare.com/w/upload/5/57/Cloud_WIN.7z">Windows demo</a>, unzip, and enter the Cloud_WIN directory.
+</p>
+<h2><span class="mw-headline" id="python_2">python</span></h2>
+<p>Note that you need to run the CMD or PowerShell under the Cloud_WIN direcoty and turn the following command.
+</p>
+<pre>python ./examples/***inch_display_EPD
+</pre>
+<p>For example：
+</p>
+<pre>#If you have 4.2inch e-Paper Cloud Module
+python ./examples/4.2inch_display_EPD
+#If you have2.13inch e-Paper Cloud Module
+python ./examples/2.13inch_display_EPD
+</pre>
+</div>
+<div class="tabbertab" title="Resources">
+<h1><span class="mw-headline" id="Resource">Resource</span></h1>
+<h3><span class="mw-headline" id="Related_Guides">Related Guides</span></h3>
+<ul><li><a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="https://www.waveshare.com/wiki/E-Paper_Floyd-Steinberg">Making BMP file for e-Paper</a></li></ul>
+<h3><span class="mw-headline" id="Androdi_app">Androdi app</span></h3>
+<ul><li><a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="https://www.waveshare.com/w/upload/0/06/Cloud_app.7z">Android APP</a></li>
+<li><a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="https://www.waveshare.com/w/upload/3/33/Cloud_e-paper.7z">Android APP Souces Codes</a></li>
+<li>You can also scan the below QR Code to install the APP</li></ul>
+<dl><dd><a href="https://www.waveshare.com/wiki/File:Cloud_APP.png" class="image"><img alt="Cloud APP.png" src="./4.2inch e-Paper Cloud Module - Waveshare Wiki_files/Cloud_APP.png" decoding="async" loading="lazy" width="400" height="400" data-file-width="298" data-file-height="298"></a></dd></dl>
+<h3><span class="mw-headline" id="Raspberry_Pi_Examples">Raspberry Pi Examples</span></h3>
+<ul><li><a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="https://www.waveshare.com/w/upload/2/2e/Cloud_RPI.7z">Raspberry Pi examples</a></li>
+<li><a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="https://www.waveshare.com/w/upload/5/57/Cloud_WIN.7z">Windows Examples</a></li></ul>
+</div>
+<div class="tabbertab" title="FAQ"><br>
+<p><br>
+</p>
+</div>
+<h1><span class="mw-headline" id="FAQ">FAQ</span></h1>
+<div class="panel-group">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							<a data-toggle="collapse" data-parent="#accordion" href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#accordion1">
+								<b>Question:</b>What is the usage environment of the e-ink screen?
+
+							</a>
+						</h4>
+					</div>
+					<div id="accordion1" class="panel-collapse collapse in">
+						<div class="panel-body">
+<div>&nbsp;<b>Answer:</b></div>
+<div>【Working conditions】Temperature range: 0~50°C; Humidity range: 35%~65%RH
+<p>【Storage conditions】: Temperature range: below 30°C; Humidity range: below 55%RH; Maximum storage time: 6 months
+</p>
+</div>
+<div style="display:none;">{{{3}}}</div>
+<div style="display:none;">{{{4}}}</div>
+<p><font color="red" style="display:none;">{{{5}}}</font>
+</p>
+						</div>
+					</div>
+				</div>
+</div>
+<p><br>
+</p>
+<h1><span class="mw-headline" id="Support">Support</span></h1>
+<div class="tabbertab" title="Support"><br>
+<font style="color:green; weight:bold;"><big><b>If you require technical support, please go to the <a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="https://support.waveshare.com/hc/en-us/requests/new">Support</a> page and open a tickets.</b></big></font></div>
+<!-- 
+NewPP limit report
+Cached time: 20220526153714
+Cache expiry: 0
+Dynamic content: true
+Complications: []
+CPU time usage: 0.222 seconds
+Real time usage: 0.264 seconds
+Preprocessor visited node count: 643/1000000
+Post‐expand include size: 26361/2097152 bytes
+Template argument size: 5310/2097152 bytes
+Highest expansion depth: 8/40
+Expensive parser function count: 0/100
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 2148/5000000 bytes
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%   72.308      1 -total
+ 59.48%   43.012      1 Template:Infobox_item
+ 30.16%   21.811      1 Template:Product_List
+ 11.37%    8.223      1 Template:FAQ
+  8.85%    6.397      1 Template:RPi_User_Guides_for_4.2inch_e-Paper_Cloud
+  8.54%    6.174      1 Template:E-Paper_Cloud_Module_Manual
+  5.65%    4.083      1 Template:Windows_User_Guides_for_4.2inch_e-Paper_Cloud
+  5.36%    3.879      1 Template:Amazon_nolink
+  5.25%    3.794      1 Template:Service00
+-->
+</div></div>								<div class="printfooter">
+				Retrieved from "<a dir="ltr" href="https://www.waveshare.com/w/index.php?title=4.2inch_e-Paper_Cloud_Module&amp;oldid=32716">https://www.waveshare.com/w/index.php?title=4.2inch_e-Paper_Cloud_Module&amp;oldid=32716</a>"				</div>
+												<div id="catlinks" class="catlinks catlinks-allhidden" data-mw="interface"><div id="mw-hidden-catlinks" class="mw-hidden-catlinks mw-hidden-cats-hidden">Hidden category: <ul><li><a href="https://www.waveshare.com/wiki/Category:SPI_interface" title="Category:SPI interface">SPI interface</a></li></ul></div></div>												<div class="visualClear"></div>
+							</div>
+			<!-- /bodyContent -->
+		</div>
+						</div>
+				</div>
+			</div>
+			<!-- /content -->
+
+			<!-- sidebar-left -->
+			<div class="sidebar-wrapper sidebar-left-wrapper">
+				<div class="sidebar-container container">
+					<div class="row">
+						<div id="sidebar-left" class="col-md-2 col-md-offset-0">
+							
+				<form action="https://www.waveshare.com/w/index.php" id="searchform">
+					<div class="form-group"><input type="search" name="search" placeholder="Search" title="Search Waveshare Wiki [alt-shift-f]" accesskey="f" id="searchInput" class="search-query form-control"><input type="submit" name="go" value="Go" title="Go to a page with this exact name if it exists" id="mw-searchButton" class="searchButton btn hidden">
+					</div>
+				</form><div id="tweekiTOC"><div class="toctitle" lang="en" dir="ltr"><h2 id="mw-toc-heading">Contents</h2><span class="toctogglespan"><label class="toctogglelabel" for="toctogglecheckbox"></label></span></div><div id="toc" class="toc" role="navigation" aria-labelledby="mw-toc-heading" style="display: table;"><input type="checkbox" role="button" id="toctogglecheckbox" class="toctogglecheckbox" style="display:none">
+<ul class="nav">
+<li class="toclevel-1 tocsection-1"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Overview"><span class="tocnumber">1</span> <span class="toctext">Overview</span></a>
+<ul class="nav">
+<li class="toclevel-2 tocsection-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Features"><span class="tocnumber">1.1</span> <span class="toctext">Features</span></a></li>
+<li class="toclevel-2 tocsection-3"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Specification"><span class="tocnumber">1.2</span> <span class="toctext">Specification</span></a></li>
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Lead_Information"><span class="tocnumber">1.3</span> <span class="toctext"><b>Lead Information</b></span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 active"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Configure_Device"><span class="tocnumber">2</span> <span class="toctext">Configure Device</span></a>
+<ul class="nav">
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#First_Setup"><span class="tocnumber">2.1</span> <span class="toctext">First Setup</span></a></li>
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Reconfiguration"><span class="tocnumber">2.2</span> <span class="toctext">Reconfiguration</span></a></li>
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#APP_Description"><span class="tocnumber">2.3</span> <span class="toctext">APP Description</span></a></li>
+<li class="toclevel-2 active"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Configure_Device_by_APP"><span class="tocnumber">2.4</span> <span class="toctext">Configure Device by APP</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Communicating_Protocol"><span class="tocnumber">3</span> <span class="toctext">Communicating Protocol</span></a>
+<ul class="nav">
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Command_Format"><span class="tocnumber">3.1</span> <span class="toctext"><b>Command Format</b></span></a></li>
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Data_Format"><span class="tocnumber">3.2</span> <span class="toctext"><b>Data Format</b></span></a></li>
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Return_Format"><span class="tocnumber">3.3</span> <span class="toctext"><b>Return Format</b></span></a></li>
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Command_Mode.EF.BC.9A"><span class="tocnumber">3.4</span> <span class="toctext"><b>Command Mode：</b></span></a>
+<ul class="nav">
+<li class="toclevel-3"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Command_Format_2"><span class="tocnumber">3.4.1</span> <span class="toctext">Command Format</span></a></li>
+<li class="toclevel-3"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Commands_.28locked.29"><span class="tocnumber">3.4.2</span> <span class="toctext">Commands (locked)</span></a></li>
+<li class="toclevel-3"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Comamnds_.28unlocked.29"><span class="tocnumber">3.4.3</span> <span class="toctext">Comamnds (unlocked)</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Data_Mode.EF.BC.9A"><span class="tocnumber">3.5</span> <span class="toctext"><b>Data Mode：</b></span></a>
+<ul class="nav">
+<li class="toclevel-3"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Data_Format_2"><span class="tocnumber">3.5.1</span> <span class="toctext">Data Format</span></a></li>
+<li class="toclevel-3"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Note.EF.BC.9A"><span class="tocnumber">3.5.2</span> <span class="toctext">Note：</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toclevel-1"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Using_Guides_for_RPI"><span class="tocnumber">4</span> <span class="toctext">Using Guides for RPI</span></a>
+<ul class="nav">
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Install_Libraries"><span class="tocnumber">4.1</span> <span class="toctext">Install Libraries</span></a></li>
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Download_the_demo_codes"><span class="tocnumber">4.2</span> <span class="toctext">Download the demo codes</span></a></li>
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#python"><span class="tocnumber">4.3</span> <span class="toctext">python</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#API_Description"><span class="tocnumber">5</span> <span class="toctext">API Description</span></a>
+<ul class="nav">
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#tcp_sver.py"><span class="tocnumber">5.1</span> <span class="toctext">tcp_sver.py</span></a>
+<ul class="nav">
+<li class="toclevel-3"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Receive_Message"><span class="tocnumber">5.1.1</span> <span class="toctext"><b>Receive Message</b></span></a></li>
+<li class="toclevel-3"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Send_Command"><span class="tocnumber">5.1.2</span> <span class="toctext"><b>Send Command</b></span></a></li>
+<li class="toclevel-3"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Sent_data"><span class="tocnumber">5.1.3</span> <span class="toctext"><b>Sent data</b></span></a></li>
+<li class="toclevel-3"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Set_suze"><span class="tocnumber">5.1.4</span> <span class="toctext"><b>Set suze</b></span></a></li>
+<li class="toclevel-3"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Update_function"><span class="tocnumber">5.1.5</span> <span class="toctext"><b>Update function</b></span></a></li>
+<li class="toclevel-3"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Check_voltage_of_battery"><span class="tocnumber">5.1.6</span> <span class="toctext"><b>Check voltage of battery</b></span></a></li>
+</ul>
+</li>
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#http_get.py"><span class="tocnumber">5.2</span> <span class="toctext">http_get.py</span></a></li>
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#epd4in2.py"><span class="tocnumber">5.3</span> <span class="toctext">epd4in2.py</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Configure_Windows"><span class="tocnumber">6</span> <span class="toctext">Configure Windows</span></a>
+<ul class="nav">
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Install_libraries_2"><span class="tocnumber">6.1</span> <span class="toctext">Install libraries</span></a></li>
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Download_demo_codes"><span class="tocnumber">6.2</span> <span class="toctext">Download demo codes</span></a></li>
+<li class="toclevel-2"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#python_2"><span class="tocnumber">6.3</span> <span class="toctext">python</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-4"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Resource"><span class="tocnumber">7</span> <span class="toctext">Resource</span></a>
+<ul class="nav">
+<li class="toclevel-2 tocsection-5"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Related_Guides"><span class="tocnumber">7.1</span> <span class="toctext">Related Guides</span></a></li>
+<li class="toclevel-2 tocsection-6"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Androdi_app"><span class="tocnumber">7.2</span> <span class="toctext">Androdi app</span></a></li>
+<li class="toclevel-2 tocsection-7"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Raspberry_Pi_Examples"><span class="tocnumber">7.3</span> <span class="toctext">Raspberry Pi Examples</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-8"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#FAQ"><span class="tocnumber">8</span> <span class="toctext">FAQ</span></a></li>
+<li class="toclevel-1 tocsection-9"><a href="https://www.waveshare.com/wiki/4.2inch_e-Paper_Cloud_Module#Support"><span class="tocnumber">9</span> <span class="toctext">Support</span></a></li>
+</ul>
+<div id="toctotop"><a href="javascript:scrollTo(0,0);">To Top</a></div></div></div>						</div>
+					</div>
+				</div>
+			</div>
+			<!-- /sidebar-left -->
+					<!-- footer -->
+			<div id="footer" role="contentinfo" class="footer container footer-sticky bg-light" style="margin-top: 50px; opacity: 1;">
+			<ul id="footer-custom"><li class="dropup"><a href="https://www.waveshare.com/w/index.php?title=Special:UserLogin&amp;returnto=4.2inch+e-Paper+Cloud+Module" title="You are encouraged to log in; however, it is not mandatory [alt-shift-o]" accesskey="o">Login / Create Account</a></li></ul><div style="clear:both"></div>			</div>
+			<!-- /footer -->
+		
+<script>(RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgPageParseReport":{"limitreport":{"cputime":"0.222","walltime":"0.264","ppvisitednodes":{"value":643,"limit":1000000},"postexpandincludesize":{"value":26361,"limit":2097152},"templateargumentsize":{"value":5310,"limit":2097152},"expansiondepth":{"value":8,"limit":40},"expensivefunctioncount":{"value":0,"limit":100},"unstrip-depth":{"value":0,"limit":20},"unstrip-size":{"value":2148,"limit":5000000},"timingprofile":["100.00%   72.308      1 -total"," 59.48%   43.012      1 Template:Infobox_item"," 30.16%   21.811      1 Template:Product_List"," 11.37%    8.223      1 Template:FAQ","  8.85%    6.397      1 Template:RPi_User_Guides_for_4.2inch_e-Paper_Cloud","  8.54%    6.174      1 Template:E-Paper_Cloud_Module_Manual","  5.65%    4.083      1 Template:Windows_User_Guides_for_4.2inch_e-Paper_Cloud","  5.36%    3.879      1 Template:Amazon_nolink","  5.25%    3.794      1 Template:Service00"]},"cachereport":{"timestamp":"20220526153714","ttl":0,"transientcontent":true}}});mw.config.set({"wgBackendResponseTime":623});});</script>	
+
+</body><auto-scroll></auto-scroll></html>
