@@ -1,4 +1,4 @@
-package waveshare_cloud
+package waveshareCloud
 
 import (
 	"fmt"
@@ -73,6 +73,7 @@ func handleRequest(conn net.Conn) {
 	// Get device ID
 	send("G", conn)
 	command, data := recieve(conn)
+	print(command, data)
 	// Shutdown the connection.
 	send("S", conn)
 	conn.Close()
