@@ -8,12 +8,12 @@ import (
 
 // A Display
 type Display struct {
-	connection net.Conn
+	Connection net.Conn
 }
 
 // Send a formatted command to the display
 func (display Display) Send(command string) (err error) {
-	_, err = display.connection.Write([]byte(";" + command + "/" + command))
+	_, err = display.Connection.Write([]byte(";" + command + "/" + command))
 	if err != nil {
 		return err
 	}
@@ -24,7 +24,7 @@ func (display Display) Send(command string) (err error) {
 func (display Display) Receive(previousCommand string) (command string, data string, err error) {
 	// The first set of data is the previous command
 	buf := make([]byte, 64)
-	conn := display.connection
+	conn := display.Connection
 	_, err = conn.Read(buf)
 	if err != nil {
 		return "", "", err

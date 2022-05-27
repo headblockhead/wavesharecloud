@@ -41,10 +41,10 @@ func handleRequest(conn net.Conn) {
 	fmt.Println("handle connection")
 	// Get device ID
 	display := waveshareCloud.Display{
-		connection: conn,
+		Connection: conn,
 	}
 	display.Send("G")
-	command, data, err := display.Receive()
+	command, data, err := display.Receive("G")
 	if err != nil {
 		fmt.Println("Error reading:", err.Error())
 	}
