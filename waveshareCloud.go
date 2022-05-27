@@ -1,38 +1,54 @@
 package waveshareCloud
 
 import (
-	"fmt"
+	"errors"
 	"net"
 	"strings"
 )
 
-func Send(command string, conn net.Conn) {
-	conn.Write([]byte(";" + command + "/" + command))
-	fmt.Println("Sent:", command)
+// A Display
+type Display struct {
+	connection net.Conn
 }
 
-func Recieve(conn net.Conn) (err error, command string, data string) {
+// Send a formatted command to the display
+func (display Display) Send(command string) (err error) {
+	_, err = display.connection.Write([]byte(";" + command + "/" + command))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Receive data from the display and format it
+func (display Display) Receive(previousCommand string) (command string, data string, err error) {
+	// The first set of data is the previous command
 	buf := make([]byte, 64)
+	conn := display.connection
 	_, err = conn.Read(buf)
 	if err != nil {
-		return err, "", ""
+		return "", "", err
 	}
 	command = string(buf)
+	command = strings.Replace(command, " ", "", -1)
+	command = strings.TrimPrefix(command, "$")
+	command = strings.TrimSuffix(command, "#")
 
+	if command != previousCommand {
+		return command, "", errors.New("command mismatch")
+	}
+
+	// The second set of data is the real data
 	buf = make([]byte, 64)
 	_, err = conn.Read(buf)
 	if err != nil {
-		return err, "", ""
+		return "", "", err
 	}
 	data = string(buf)
 
-	command = strings.Replace(command, " ", "", -1)
-	command = strings.Replace(command, "#", "", -1)
-	command = strings.Replace(command, "$", "", -1)
-
 	data = strings.Replace(data, " ", "", -1)
-	data = strings.Replace(data, "#", "", -1)
-	data = strings.Replace(data, "$", "", -1)
+	data = strings.TrimPrefix(data, "$")
+	data = strings.TrimSuffix(data, "#")
 
-	return nil, command, data
+	return command, data, nil
 }

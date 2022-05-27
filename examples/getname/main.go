@@ -40,13 +40,16 @@ func main() {
 func handleRequest(conn net.Conn) {
 	fmt.Println("handle connection")
 	// Get device ID
-	waveshareCloud.Send("G", conn)
-	err, command, data := waveshareCloud.Recieve(conn)
+	display := waveshareCloud.Display{
+		connection: conn,
+	}
+	display.Send("G")
+	command, data, err := display.Receive()
 	if err != nil {
 		fmt.Println("Error reading:", err.Error())
 	}
 	fmt.Println("Received:", data, "From:", command)
 	// Shutdown the connection.
-	waveshareCloud.Send("S", conn)
+	display.Send("S")
 	conn.Close()
 }
