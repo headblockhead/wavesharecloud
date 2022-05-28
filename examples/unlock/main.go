@@ -38,15 +38,14 @@ func main() {
 
 func handleRequest(conn net.Conn) {
 	display := waveshareCloud.NewDisplay(conn, true)
-	unlocked, err := display.GetLocked()
+	err := display.Unlock("sad")
 	if err != nil {
-		fmt.Printf("Error getting unlocked: %v", err)
+		fmt.Printf("Error unlocking: %v\n", err)
 	}
-	fmt.Println("Received:", unlocked)
 	// Shutdown the connection.
 	err = display.Shutdown()
 	if err != nil {
-		fmt.Printf("Error shutting down: %v", err)
+		fmt.Printf("Error shutting down: %v\n", err)
 	}
 	display.Disconnect()
 }

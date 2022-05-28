@@ -69,7 +69,6 @@ func (display *Display) ReceiveData(previousCommand string) (data string, err er
 	if !strings.Contains(command, previousCommand) {
 		return "", fmt.Errorf("command mismatch: expected %s, got %v", previousCommand, command)
 	}
-
 	// The second set of data is the real data
 	buf = make([]byte, 64)
 	_, err = display.Connection.Read(buf)
@@ -84,6 +83,23 @@ func (display *Display) ReceiveData(previousCommand string) (data string, err er
 
 	return data, nil
 }
+
+//UnsafeReceiveData receives data from the display without checking if it is valid and only returns the first set of data it gets
+func (display *Display) UnsafeReceiveData() (data string, err error) {
+	// The first set of data is the previous command
+	buf := make([]byte, 64)
+	_, err = display.Connection.Read(buf)
+	if err != nil {
+		return "", err
+	}
+	command := string(buf)
+	command = strings.Replace(command, " ", "", -1)
+	command = strings.Replace(command, "$", "", -1)
+	command = strings.Replace(command, "#", "", -1)
+
+	return command, nil
+}
+
 func (display *Display) Shutdown() (err error) {
 	if display.unlocked {
 		display.SendCommand("S")
@@ -132,19 +148,35 @@ func (display *Display) GetLocked() (unlocked bool, err error) {
 
 // GetLocked gets whether the display is locked with a PIN
 func (display *Display) Unlock(password string) (err error) {
-	err = display.SendCommand("N" + password)
+	err = display.SendCommand("C")
 	if err != nil {
 		return err
 	}
-	data, err := display.ReceiveData("N" + password)
+	data, err := display.ReceiveData("C")
 	if err != nil {
 		return err
 	}
-	bytedata := []byte(data)
-	bytedata = bytes.Trim(bytedata, "\x00")
-	println(bytedata)
-	if err != nil {
-		return err
+	if strings.Contains(data, "1") {
+		println("locked")
+		err = display.SendCommand("N" + password)
+		if err != nil {
+			return err
+		}
+		println("sent password")
+		data, err = display.UnsafeReceiveData()
+		if err != nil {
+			return err
+		}
+		println("recieved")
+		println(data)
+		if data == "1" {
+			println("unlocked")
+			display.unlocked = true
+			return nil
+		} else {
+			return fmt.Errorf("wrong password")
+		}
+	} else {
+		return fmt.Errorf("display is already unlocked")
 	}
-	return nil
 }
