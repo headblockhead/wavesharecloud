@@ -4,12 +4,38 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"io"
 	"net"
 	"strconv"
 	"strings"
 )
 
-func NewDisplay(conn net.Conn, locked bool) *Display {
+func NewLoggingConn(conn net.Conn) *LoggingConn {
+	return &LoggingConn{
+		Connection: conn,
+	}
+}
+
+type LoggingConn struct {
+	Connection net.Conn
+}
+
+func (lc *LoggingConn) Read(b []byte) (n int, err error) {
+	n, err = lc.Connection.Read(b)
+	fmt.Println("< " + string(b))
+	return n, err
+}
+
+func (lc *LoggingConn) Write(b []byte) (n int, err error) {
+	fmt.Println("> " + string(b))
+	return lc.Connection.Write(b)
+}
+
+func (lc *LoggingConn) Close() error {
+	return lc.Connection.Close()
+}
+
+func NewDisplay(conn io.ReadWriteCloser, locked bool) *Display {
 	return &Display{
 		Connection: conn,
 		unlocked:   !locked,
@@ -18,13 +44,18 @@ func NewDisplay(conn net.Conn, locked bool) *Display {
 
 // A Display
 type Display struct {
-	Connection net.Conn
+	Connection io.ReadWriteCloser
 	unlocked   bool
 }
 
 // SendCommand sends a formatted command to the display
 func (display *Display) SendCommand(command string) (err error) {
-	_, err = display.Connection.Write([]byte(";" + command + "/" + command))
+	var check uint32
+	for i := 0; i < len(command); i++ {
+		check = check ^ uint32(command[i])
+	}
+	fmt.Printf("Sending command: %d\n", check)
+	_, err = display.Connection.Write([]byte(";" + command + "/" + string(rune(check))))
 	if err != nil {
 		return err
 	}
@@ -164,12 +195,13 @@ func (display *Display) Unlock(password string) (err error) {
 		}
 		println("sent password")
 		data, err = display.UnsafeReceiveData()
+		data, err = display.UnsafeReceiveData()
 		if err != nil {
 			return err
 		}
 		println("recieved")
 		println(data)
-		if data == "1" {
+		if strings.Contains(data, "1") {
 			println("unlocked")
 			display.unlocked = true
 			return nil
