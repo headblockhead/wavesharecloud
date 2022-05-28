@@ -18,7 +18,7 @@ func main() {
 	// Listen for incoming connections.
 	l, err := net.Listen(CONN_TYPE, CONN_HOST+":"+CONN_PORT)
 	if err != nil {
-		fmt.Println("Error listening:", err.Error())
+		fmt.Printf("Error listening for connections: %v", err)
 		os.Exit(1)
 	}
 	// Close the listener when the application closes.
@@ -27,9 +27,8 @@ func main() {
 	for {
 		// Listen for an incoming connection.
 		conn, err := l.Accept()
-		fmt.Println("Accepted connection")
 		if err != nil {
-			fmt.Println("Error accepting: ", err.Error())
+			fmt.Printf("Error accepting a connection: %v", err)
 			os.Exit(1)
 		}
 		// Handle connections in a new goroutine.
@@ -38,17 +37,16 @@ func main() {
 }
 
 func handleRequest(conn net.Conn) {
-	display := waveshareCloud.NewDisplay(conn)
-	err := display.SendCommand("G")
+	display := waveshareCloud.NewDisplay(conn, true)
+	ID, err := display.GetID()
 	if err != nil {
-		fmt.Printf("Error sending: %v\n", err)
+		fmt.Printf("Error getting ID: %v", err)
 	}
-	command, data, err := display.ReceiveData("G")
-	if err != nil {
-		fmt.Println("Error reading:", err.Error())
-	}
-	fmt.Println("Received:", data, "From:", command)
+	fmt.Println("Received:", ID)
 	// Shutdown the connection.
-	display.SendCommand("S")
+	err = display.Shutdown()
+	if err != nil {
+		fmt.Printf("Error shutting down: %v", err)
+	}
 	display.Disconnect()
 }
