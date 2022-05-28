@@ -54,7 +54,7 @@ func (display *Display) SendCommand(command string) (err error) {
 	for i := 0; i < len(command); i++ {
 		check = check ^ uint32(command[i])
 	}
-	fmt.Printf("Sending command: %d\n", check)
+
 	_, err = display.Connection.Write([]byte(";" + command + "/" + string(rune(check))))
 	if err != nil {
 		return err
@@ -188,21 +188,16 @@ func (display *Display) Unlock(password string) (err error) {
 		return err
 	}
 	if strings.Contains(data, "1") {
-		println("locked")
 		err = display.SendCommand("N" + password)
 		if err != nil {
 			return err
 		}
-		println("sent password")
 		data, err = display.UnsafeReceiveData()
 		data, err = display.UnsafeReceiveData()
 		if err != nil {
 			return err
 		}
-		println("recieved")
-		println(data)
 		if strings.Contains(data, "1") {
-			println("unlocked")
 			display.unlocked = true
 			return nil
 		} else {

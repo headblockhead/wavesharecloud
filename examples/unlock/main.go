@@ -39,7 +39,7 @@ func main() {
 func handleRequest(conn net.Conn) {
 	lc := waveshareCloud.NewLoggingConn(conn)
 	display := waveshareCloud.NewDisplay(lc, true)
-	err := display.Unlock("12341")
+	err := display.Unlock("12345")
 	if err != nil {
 		fmt.Printf("Error unlocking: %v\n", err)
 	}
