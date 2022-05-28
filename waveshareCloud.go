@@ -39,6 +39,8 @@ func NewDisplay(conn io.ReadWriteCloser, locked bool) *Display {
 	return &Display{
 		Connection: conn,
 		unlocked:   !locked,
+		Width:      400,
+		Height:     300,
 	}
 }
 
@@ -46,6 +48,8 @@ func NewDisplay(conn io.ReadWriteCloser, locked bool) *Display {
 type Display struct {
 	Connection io.ReadWriteCloser
 	unlocked   bool
+	Width      int
+	Height     int
 }
 
 // SendCommand sends a formatted command to the display
@@ -62,26 +66,122 @@ func (display *Display) SendCommand(command string) (err error) {
 	return nil
 }
 
-// SendData sends formatted image data to the display
-func (display *Display) SendData(data []byte) (err error) {
-	// 0x57+4Byte addr+4Byte len+1Byte num+len Byte data +Verify
-	prefix := uint32(0x57)
-	var check uint32
-	for i := 0; i < len(data); i++ {
-		check = check ^ uint32(data[i])
+func (display *Display) SendImage(data []byte) (err error) {
+	println("start IMAGE SEND")
+	if len(data) != (display.Width*display.Height)/8 {
+		return fmt.Errorf("data length does not match display size")
 	}
-	err = binary.Write(display.Connection, binary.LittleEndian, prefix)
+	println("SENDING F to pay respects")
+	err = display.SendCommand("F")
 	if err != nil {
 		return err
 	}
-	err = binary.Write(display.Connection, binary.LittleEndian, data)
+	_, err = display.UnsafeReceiveData()
 	if err != nil {
 		return err
 	}
-	err = binary.Write(display.Connection, binary.LittleEndian, check)
+	var count uint8
+	for i := 0; i < len(data); i += 1024 {
+		to := i + 1024
+		if to > len(data) {
+			to = len(data)
+		}
+		err = display.SendFrame(uint32(i), count, data[i:to])
+		if err != nil {
+			return err
+		}
+		_, err = display.UnsafeReceiveData()
+		if err != nil {
+			return err
+		}
+		count++
+	}
+	err = display.SendCloseFrame()
 	if err != nil {
 		return err
 	}
+	err = display.SendCommand("D")
+	if err != nil {
+		return err
+	}
+	_, err = display.UnsafeReceiveData()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+var closeFrame = []byte{
+	0x57,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0x00,
+}
+
+// SendFrame sends formatted image data to the display
+func (display *Display) SendCloseFrame() (err error) {
+	_, err = display.Connection.Write(closeFrame)
+	if err != nil {
+		return err
+	}
+	_, err = display.UnsafeReceiveData()
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+// SendFrame sends formatted image data to the display
+func (display *Display) SendFrame(addr uint32, num uint8, data []byte) (err error) {
+	if len(data) > 1024 {
+		return fmt.Errorf("data too large, maximum size is 1024")
+	}
+	frame := new(bytes.Buffer)
+	// 0x57
+	err = binary.Write(frame, binary.BigEndian, uint8(0x57))
+	if err != nil {
+		return err
+	}
+	// 4 byte addr
+	err = binary.Write(frame, binary.BigEndian, addr)
+	if err != nil {
+		return err
+	}
+	// 4 bytes len
+	err = binary.Write(frame, binary.BigEndian, uint32(len(data)))
+	if err != nil {
+		return err
+	}
+	// 1 byte num
+	err = binary.Write(frame, binary.BigEndian, num)
+	if err != nil {
+		return err
+	}
+	// data
+	err = binary.Write(frame, binary.BigEndian, data)
+	if err != nil {
+		return err
+	}
+	if remaining := 1024 - len(data); remaining > 0 {
+		remainder := make([]byte, remaining)
+		for i := 0; i < len(remainder); i++ {
+			remainder[i] = 0xFF
+		}
+		err = binary.Write(frame, binary.BigEndian, remainder)
+		if err != nil {
+			return err
+		}
+	}
+	// verify
+	var check byte
+	payload := frame.Bytes()
+	for i := 1; i < len(payload[1:len(data)]); i++ {
+		check = check ^ payload[i]
+	}
+	err = binary.Write(frame, binary.BigEndian, check)
+	if err != nil {
+		return err
+	}
+	display.Connection.Write(frame.Bytes())
 	return nil
 }
 
