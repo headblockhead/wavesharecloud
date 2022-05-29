@@ -27,7 +27,7 @@ func (lc *LoggingConn) Read(b []byte) (n int, err error) {
 }
 
 func (lc *LoggingConn) Write(b []byte) (n int, err error) {
-	fmt.Println("> " + string(b))
+	// fmt.Println("> " + string(b))
 	return lc.Connection.Write(b)
 }
 
@@ -86,7 +86,7 @@ func (display *Display) SendImage(data []byte) (err error) {
 		if to > len(data) {
 			to = len(data)
 		}
-		err = display.SendFrame(uint32(i), count, data[i:to])
+		err = display.SendFrame(uint32(i), uint8((uint32(i)%4096)/1024), data[i:to])
 		if err != nil {
 			return err
 		}
@@ -147,7 +147,7 @@ func (display *Display) SendFrame(addr uint32, num uint8, data []byte) (err erro
 		return err
 	}
 	// 4 bytes len
-	err = binary.Write(frame, binary.BigEndian, uint32(len(data)))
+	err = binary.Write(frame, binary.BigEndian, uint32(1024))
 	if err != nil {
 		return err
 	}
@@ -174,9 +174,10 @@ func (display *Display) SendFrame(addr uint32, num uint8, data []byte) (err erro
 	// verify
 	var check byte
 	payload := frame.Bytes()
-	for i := 1; i < len(payload[1:len(data)]); i++ {
+	for i := 1; i < len(payload[1:]); i++ {
 		check = check ^ payload[i]
 	}
+	fmt.Printf("sending check: %s\n", string(check))
 	err = binary.Write(frame, binary.BigEndian, check)
 	if err != nil {
 		return err
@@ -304,6 +305,7 @@ func (display *Display) Unlock(password string) (err error) {
 			return fmt.Errorf("wrong password")
 		}
 	} else {
+		display.unlocked = true
 		return fmt.Errorf("display is already unlocked")
 	}
 }
