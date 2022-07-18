@@ -5,6 +5,7 @@ import (
 	"image/jpeg"
 	"net"
 	"os"
+	"time"
 
 	"github.com/headblockhead/waveshareCloud"
 )
@@ -38,12 +39,12 @@ func main() {
 }
 
 func handleRequest(conn net.Conn) {
+	fmt.Println("New connection from:", conn.RemoteAddr())
+	// Setting up the connection to the display.
 	lc := waveshareCloud.NewLoggingConn(conn, false)
+	// Creating the representation of the display. It is not locked at the moment, so this boolean is false.
 	display := waveshareCloud.NewDisplay(lc, false)
-	err := display.Unlock("12345")
-	if err != nil {
-		fmt.Printf("Error unlocking: %v\n", err)
-	}
+
 	file, err := os.Open("image.jpg")
 	if err != nil {
 		fmt.Printf("Error opening image: %v\n", err)
@@ -53,10 +54,24 @@ func handleRequest(conn net.Conn) {
 	if err != nil {
 		fmt.Printf("Error decoding image: %v\n", err)
 	}
-	err = display.SendImage(img)
+
+	// We do not want to scale the image to the display size, so this boolean is false.
+	// This will crop the image to the display size from the top left corner.
+	err = display.SendImage(img, false)
 	if err != nil {
 		fmt.Printf("Error sending image: %v\n", err)
 	}
+
+	// Wait 3 seconds before sending the next image. This gives the user time to see the image.
+	time.Sleep(time.Second * 3)
+
+	// This time, we do want to scale the image to the display size, so this boolean is true.
+	// This will scale the image by squashing it to the display size.
+	err = display.SendImage(img, true)
+	if err != nil {
+		fmt.Printf("Error sending image: %v\n", err)
+	}
+
 	// Shutdown the display.
 	err = display.Shutdown()
 	if err != nil {

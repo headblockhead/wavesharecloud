@@ -37,16 +37,23 @@ func main() {
 }
 
 func handleRequest(conn net.Conn) {
+	fmt.Println("New connection from:", conn.RemoteAddr())
+	// Setting up the connection to the display.
 	lc := waveshareCloud.NewLoggingConn(conn, false)
+	// Creating the representation of the display. It is locked at the moment, so this boolean is true.
 	display := waveshareCloud.NewDisplay(lc, true)
+
+	// Unlock the display with the password: 12345
 	err := display.Unlock("12345")
 	if err != nil {
-		fmt.Printf("Error unlocking: %v\n", err)
+		fmt.Printf("Error unlocking device: %v\n", err)
 	}
-	// Shutdown the connection.
+
+	// Shutdown the display.
 	err = display.Shutdown()
 	if err != nil {
 		fmt.Printf("Error shutting down: %v\n", err)
 	}
+	// Close the connection.
 	display.Disconnect()
 }

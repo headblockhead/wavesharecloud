@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/MaxHalford/halfgone"
+	"github.com/disintegration/imaging"
 )
 
 // NewLoggingConn returns a new connection that will optionally log all traffic.
@@ -84,6 +85,9 @@ func (display *Display) SendCommand(command string) (err error) {
 
 // SendImageBytes displays an array of bytes on the screen.
 func (display *Display) SendImageBytes(data []byte) (err error) {
+	if !display.unlocked {
+		return fmt.Errorf("display is locked")
+	}
 	if len(data) != (display.Width*display.Height)/8 {
 		return fmt.Errorf("data length does not match display size")
 	}
@@ -135,6 +139,9 @@ var closeFrame = []byte{
 
 // SendCloseFrame sends the last frame to the display
 func (display *Display) SendCloseFrame() (err error) {
+	if !display.unlocked {
+		return fmt.Errorf("display is locked")
+	}
 	_, err = display.Connection.Write(closeFrame)
 	if err != nil {
 		return err
@@ -147,17 +154,35 @@ func (display *Display) SendCloseFrame() (err error) {
 	return nil
 }
 
-// SendImage converts an image into bytes, then sends it to the display.
-func (display *Display) SendImage(img image.Image) (err error) {
-	imageBytes, err := loadImage(img)
+// SendImage converts an image into bytes, then sends it to the display. If the image is not 400x300, it will resize it or crop it, depending on the scale argument. This requires the display to be unlocked.
+func (display *Display) SendImage(img image.Image, scale bool) (err error) {
+	if !display.unlocked {
+		return fmt.Errorf("display is locked")
+	}
+	var resizedImage image.Image
+	if scale {
+		resizedImage, err = resizeImage(img, display.Width, display.Height)
+		if err != nil {
+			return err
+		}
+	} else {
+		resizedImage, err = cropImage(img, image.Rect(0, 0, 400, 300))
+		if err != nil {
+			return err
+		}
+	}
+	imageBytes, err := loadImage(resizedImage)
 	if err != nil {
 		return err
 	}
 	return display.SendImageBytes(imageBytes)
 }
 
-// SendFrame sends a frame of image data to the display.
+// SendFrame sends a frame of image data to the display. This requires the display to be in data mode.
 func (display *Display) SendFrame(addr uint32, num uint8, data []byte) (err error) {
+	if !display.unlocked {
+		return fmt.Errorf("display is locked")
+	}
 	if len(data) > 1024 {
 		return fmt.Errorf("data too large, maximum size is 1024")
 	}
@@ -267,14 +292,32 @@ func (display *Display) ReadBlindly() (data string, err error) {
 	return command, nil
 }
 
-// Shutdown sends a command to the display to shut it down.
-func (display *Display) Shutdown() (err error) {
-	if display.unlocked {
-		display.SendCommand("S")
-		return nil
-	} else {
+// Restart sends a command to the display to restart it. This requires the device to be unlocked.
+func (display *Display) Restart() (err error) {
+	if !display.unlocked {
 		return fmt.Errorf("display is locked")
 	}
+	display.SendCommand("R")
+	return nil
+}
+
+// GetBatteryLevel sends a command to the display to get its battery level. This requires the device to be unlocked.
+func (display *Display) GetBatteryLevel() (err error) {
+	if !display.unlocked {
+		return fmt.Errorf("display is locked")
+	}
+	display.SendCommand("b")
+	display.ReceiveCommandOutput("b")
+	return nil
+}
+
+// Shutdown sends a command to the display to shut it down. This requires the device to be unlocked.
+func (display *Display) Shutdown() (err error) {
+	if !display.unlocked {
+		return fmt.Errorf("display is locked")
+	}
+	display.SendCommand("S")
+	return nil
 }
 
 // Disconnect closes the connection to the display
@@ -402,4 +445,27 @@ func formatTransmissionString(toFormat string) (formatted string) {
 	toFormat = strings.Replace(toFormat, "$", "", -1)
 	toFormat = strings.Replace(toFormat, "#", "", -1)
 	return toFormat
+}
+
+// resizeImage resizes an image to the given width and height
+func resizeImage(img image.Image, width, height int) (resized image.Image, err error) {
+	resized = imaging.Resize(img, width, height, imaging.Lanczos)
+	return resized, nil
+}
+
+// cropImage takes an image and crops it to the specified rectangle.
+func cropImage(img image.Image, crop image.Rectangle) (croppedImage image.Image, err error) {
+	type subImager interface {
+		SubImage(r image.Rectangle) image.Image
+	}
+
+	// // img is an Image interface. This checks if the underlying value has a
+	// // method called SubImage. If it does, then we can use SubImage to crop the
+	// // image.
+	simg, ok := img.(subImager)
+	if !ok {
+		return nil, fmt.Errorf("image does not support cropping")
+	}
+
+	return simg.SubImage(crop), nil
 }
