@@ -91,7 +91,7 @@ func (display *Display) SendImageBytes(data []byte) (err error) {
 	if err != nil {
 		return err
 	}
-	err = display.ReadBlindlyIgnore()
+	err = display.ReadBlindlyAndIgnore()
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func (display *Display) SendImageBytes(data []byte) (err error) {
 		if err != nil {
 			return err
 		}
-		err = display.ReadBlindlyIgnore()
+		err = display.ReadBlindlyAndIgnore()
 		if err != nil {
 			return err
 		}
@@ -119,7 +119,7 @@ func (display *Display) SendImageBytes(data []byte) (err error) {
 	if err != nil {
 		return err
 	}
-	err = display.ReadBlindlyIgnore()
+	err = display.ReadBlindlyAndIgnore()
 	if err != nil {
 		return err
 	}
@@ -140,7 +140,7 @@ func (display *Display) SendCloseFrame() (err error) {
 		return err
 	}
 	// We do not need to know the checksum: it does not matter to displaying the image here.
-	err = display.ReadBlindlyIgnore()
+	err = display.ReadBlindlyAndIgnore()
 	if err != nil {
 		return err
 	}
@@ -162,7 +162,8 @@ func (display *Display) SendFrame(addr uint32, num uint8, data []byte) (err erro
 		return fmt.Errorf("data too large, maximum size is 1024")
 	}
 	frame := new(bytes.Buffer)
-	// 0x57
+	// This is the header of the frame. It includes:
+	// 0x57 - data identifier
 	err = binary.Write(frame, binary.BigEndian, uint8(0x57))
 	if err != nil {
 		return err
@@ -182,12 +183,13 @@ func (display *Display) SendFrame(addr uint32, num uint8, data []byte) (err erro
 	if err != nil {
 		return err
 	}
-	// data
+	// This is the data of the frame. It is after the header.
 	err = binary.Write(frame, binary.BigEndian, data)
 	if err != nil {
 		return err
 	}
-	// If there are bytes missing in a frame, fill them with 0xFF. This should be expected on the final frame.
+	// If there are bytes missing in a frame, fill them with 0xFF.
+	// This should be expected on the final frame, as the avalible pixels on the screen do not divide into 1024 prefectly.
 	if remaining := 1024 - len(data); remaining > 0 {
 		remainder := make([]byte, remaining)
 		for i := 0; i < len(remainder); i++ {
@@ -198,18 +200,20 @@ func (display *Display) SendFrame(addr uint32, num uint8, data []byte) (err erro
 			return err
 		}
 	}
-	// CheckSum8 Xor
+	// Calculate the checksum of the frame
 	var check byte
 	payload := frame.Bytes()
 	// The first byte is the 0x57 identifier, so we skip it.
 	for i := 1; i < len(payload[1:])+1; i++ {
+		// CheckSum8 Xor
 		check ^= payload[i]
 	}
+	// The checksum byte is the last byte of the frame. It is stored as BigEndian.
 	err = binary.Write(frame, binary.BigEndian, check)
 	if err != nil {
 		return err
 	}
-
+	// Write out the full frame to the display.
 	display.Connection.Write(frame.Bytes())
 	return nil
 }
@@ -240,8 +244,8 @@ func (display *Display) ReceiveCommandOutput(sentCommand string) (data string, e
 	return data, nil
 }
 
-// ReadBlindlyIgnore mindlessly reads data from the display and does not do anything wth it.
-func (display *Display) ReadBlindlyIgnore() (err error) {
+// ReadBlindlyAndIgnore mindlessly reads data from the display and does not do anything wth it.
+func (display *Display) ReadBlindlyAndIgnore() (err error) {
 	buf := make([]byte, 64)
 	_, err = display.Connection.Read(buf)
 	if err != nil {
@@ -250,7 +254,7 @@ func (display *Display) ReadBlindlyIgnore() (err error) {
 	return nil
 }
 
-// ReadBlindly reads any data from the display and returns it (after formatting).
+// ReadBlindly reads any avalible data from the display and returns it (after formatting).
 func (display *Display) ReadBlindly() (data string, err error) {
 	buf := make([]byte, 64)
 	_, err = display.Connection.Read(buf)
@@ -325,7 +329,7 @@ func (display *Display) Unlock(password string) (err error) {
 		if err != nil {
 			return err
 		}
-		err = display.ReadBlindlyIgnore()
+		err = display.ReadBlindlyAndIgnore()
 		if err != nil {
 			return err
 		}
