@@ -45,31 +45,50 @@ func handleRequest(conn net.Conn) {
 	// Creating the representation of the display. It is not locked at the moment, so this boolean is false.
 	display := waveshareCloud.NewDisplay(lc, false)
 
-	file, err := os.Open("image.jpg")
+	// Open the test pattern image and decode it.
+	testPatternFile, err := os.Open("testpattern.jpg")
 	if err != nil {
-		fmt.Printf("Error opening image: %v\n", err)
+		fmt.Printf("Error opening testpattern image: %v\n", err)
 	}
-	defer file.Close()
-	img, err := jpeg.Decode(file)
+	defer testPatternFile.Close()
+	testPatternImage, err := jpeg.Decode(testPatternFile)
 	if err != nil {
-		fmt.Printf("Error decoding image: %v\n", err)
+		fmt.Printf("Error decoding testpattern image: %v\n", err)
 	}
 
-	// We do not want to scale the image to the display size, so this boolean is false.
-	// This will crop the image to the display size from the top left corner.
-	err = display.SendImage(img, false)
+	// Open the flower image and decode it.
+	flowerFile, err := os.Open("flowers.jpg")
 	if err != nil {
-		fmt.Printf("Error sending image: %v\n", err)
+		fmt.Printf("Error opening flowers image: %v\n", err)
+	}
+	defer flowerFile.Close()
+	flowerImage, err := jpeg.Decode(flowerFile)
+	if err != nil {
+		fmt.Printf("Error decoding flowers image: %v\n", err)
+	}
+
+	// Drawing the testpattern image to the display.
+	err = display.SendImage(testPatternImage)
+	if err != nil {
+		fmt.Printf("Error sending testpattern image: %v\n", err)
 	}
 
 	// Wait 3 seconds before sending the next image. This gives the user time to see the image.
 	time.Sleep(time.Second * 3)
 
-	// This time, we do want to scale the image to the display size, so this boolean is true.
-	// This will scale the image by squashing it to the display size.
-	err = display.SendImage(img, true)
+	// Drawing the flower image to the display - Cropped from the top left
+	err = display.SendImage(flowerImage)
 	if err != nil {
-		fmt.Printf("Error sending image: %v\n", err)
+		fmt.Printf("Error sending cropped flower image: %v\n", err)
+	}
+
+	// Wait 3 seconds before sending the next image. This gives the user time to see the image.
+	time.Sleep(time.Second * 3)
+
+	// Drawing the flower image to the display - Scaled to fill the screen
+	err = display.SendImageScaled(flowerImage)
+	if err != nil {
+		fmt.Printf("Error sending scaled flower image: %v\n", err)
 	}
 
 	// Shutdown the display.

@@ -154,22 +154,35 @@ func (display *Display) SendCloseFrame() (err error) {
 	return nil
 }
 
-// SendImage converts an image into bytes, then sends it to the display. If the image is not 400x300, it will resize it or crop it, depending on the scale argument. This requires the display to be unlocked.
-func (display *Display) SendImage(img image.Image, scale bool) (err error) {
+// SendImage converts an image into bytes, then sends it to the display. If the image is not 400x300, it will crop it from the top left. This requires the display to be unlocked.
+func (display *Display) SendImage(img image.Image) (err error) {
 	if !display.unlocked {
 		return fmt.Errorf("display is locked")
 	}
 	var resizedImage image.Image
-	if scale {
-		resizedImage, err = resizeImage(img, display.Width, display.Height)
-		if err != nil {
-			return err
-		}
-	} else {
-		resizedImage, err = cropImage(img, image.Rect(0, 0, 400, 300))
-		if err != nil {
-			return err
-		}
+	if (img.Bounds().Dx() < display.Width) || (img.Bounds().Dy() < display.Height) {
+		return fmt.Errorf("image is too small for cropping, try SendImageScaled")
+	}
+	resizedImage, err = cropImage(img, image.Rect(0, 0, display.Width, display.Height))
+	if err != nil {
+		return err
+	}
+	imageBytes, err := loadImage(resizedImage)
+	if err != nil {
+		return err
+	}
+	return display.SendImageBytes(imageBytes)
+}
+
+// SendImageScaled converts an image into bytes, then sends it to the display. If the image is not 400x300, it will resize it. This requires the display to be unlocked.
+func (display *Display) SendImageScaled(img image.Image) (err error) {
+	if !display.unlocked {
+		return fmt.Errorf("display is locked")
+	}
+	var resizedImage image.Image
+	resizedImage, err = resizeImage(img, display.Width, display.Height)
+	if err != nil {
+		return err
 	}
 	imageBytes, err := loadImage(resizedImage)
 	if err != nil {
@@ -302,13 +315,24 @@ func (display *Display) Restart() (err error) {
 }
 
 // GetBatteryLevel sends a command to the display to get its battery level. This requires the device to be unlocked.
-func (display *Display) GetBatteryLevel() (err error) {
+func (display *Display) GetBatteryLevel() (batteryLevel int, err error) {
 	if !display.unlocked {
-		return fmt.Errorf("display is locked")
+		return 0, fmt.Errorf("display is locked")
 	}
-	display.SendCommand("b")
-	display.ReceiveCommandOutput("b")
-	return nil
+	err = display.SendCommand("b")
+	if err != nil {
+		return 0, err
+	}
+	batteryLevelString, err := display.ReceiveCommandOutput("b")
+	if err != nil {
+		return 0, err
+	}
+
+	batteryLevel, err = strconv.Atoi(batteryLevelString)
+	if err != nil {
+		return 0, err
+	}
+	return batteryLevel, nil
 }
 
 // Shutdown sends a command to the display to shut it down. This requires the device to be unlocked.
@@ -441,9 +465,10 @@ func loadImage(img image.Image) (data []byte, err error) {
 
 // formatTransmissionString extracts the data from the input and output by removing the leading and trailing characters
 func formatTransmissionString(toFormat string) (formatted string) {
-	toFormat = strings.Replace(toFormat, " ", "", -1)
 	toFormat = strings.Replace(toFormat, "$", "", -1)
 	toFormat = strings.Replace(toFormat, "#", "", -1)
+	// When reciving the output from a command, there are trailing null caracters that need to be removed.
+	toFormat = strings.Replace(toFormat, "\x00", "", -1)
 	return toFormat
 }
 
@@ -459,9 +484,9 @@ func cropImage(img image.Image, crop image.Rectangle) (croppedImage image.Image,
 		SubImage(r image.Rectangle) image.Image
 	}
 
-	// // img is an Image interface. This checks if the underlying value has a
-	// // method called SubImage. If it does, then we can use SubImage to crop the
-	// // image.
+	// img is an Image interface. This checks if the underlying value has a
+	// method called SubImage. If it does, then we can use SubImage to crop the
+	// image.
 	simg, ok := img.(subImager)
 	if !ok {
 		return nil, fmt.Errorf("image does not support cropping")
