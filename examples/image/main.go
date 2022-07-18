@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	CONN_HOST = "192.168.155.216"
+	CONN_HOST = "192.168.155.5"
 	CONN_PORT = "6868"
 	CONN_TYPE = "tcp"
 )
@@ -48,12 +48,11 @@ func handleRequest(conn net.Conn) {
 	if err != nil {
 		fmt.Printf("Error unlocking: %v\n", err)
 	}
-	_, err = loadImage("/home/headb/Downloads/400x300.jpg")
+	newimage, err := loadImage("image.jpg")
 	if err != nil {
 		fmt.Printf("Error loading image: %v\n", err)
 	}
-
-	err = display.SendImage(generateblack())
+	err = display.SendImageBytes(newimage)
 	if err != nil {
 		fmt.Printf("Error sending image: %v\n", err)
 	}
@@ -65,16 +64,25 @@ func handleRequest(conn net.Conn) {
 	display.Disconnect()
 }
 
-func generateblack() (data []byte) {
+func generateWhite() (data []byte) {
 	data = make([]byte, 400*300/8)
 	for i := 0; i < (400 * 300 / 8); i++ {
-		// if (i % 3) == 0 {
-		// 	data[i] = 0x81
-		// } else if (i % 2) == 0 {
-		// 	data[i] = 0x7E
-		// } else {
-		// 	data[i] = 0xEF
-		// }
+		data[i] = 0xFF
+	}
+	return data
+}
+
+func generateBlack() (data []byte) {
+	data = make([]byte, 400*300/8)
+	for i := 0; i < (400 * 300 / 8); i++ {
+		data[i] = 0x00
+	}
+	return data
+}
+
+func generateRandomData() (data []byte) {
+	data = make([]byte, 400*300/8)
+	for i := 0; i < (400 * 300 / 8); i++ {
 		data[i] = byte(rand.Intn(0xFF))
 	}
 	return data
@@ -92,14 +100,9 @@ func loadImage(path string) (data []byte, err error) {
 	}
 	gray := halfgone.FloydSteinbergDitherer{}.Apply(halfgone.ImageToGray(img))
 
-	w, _ := os.Create("/home/headb/Downloads/400x300_dithered.jpg")
-	jpeg.Encode(w, gray, &jpeg.Options{Quality: 100})
-
 	bytes := convertImageToBits(gray)
-	convertedBack := convertBitsToImage(bytes, img.Bounds())
-	w2, _ := os.Create("/home/headb/Downloads/400x300_dithered_converted_back.jpg")
-	jpeg.Encode(w2, convertedBack, &jpeg.Options{Quality: 100})
-
+	// w2, _ := os.Create("./ditheredimage.jpg")
+	// jpeg.Encode(w2, gray, &jpeg.Options{Quality: 100})
 	return bytes, nil
 }
 

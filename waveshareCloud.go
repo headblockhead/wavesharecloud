@@ -66,12 +66,10 @@ func (display *Display) SendCommand(command string) (err error) {
 	return nil
 }
 
-func (display *Display) SendImage(data []byte) (err error) {
-	println("start IMAGE SEND")
+func (display *Display) SendImageBytes(data []byte) (err error) {
 	if len(data) != (display.Width*display.Height)/8 {
 		return fmt.Errorf("data length does not match display size")
 	}
-	println("SENDING F to pay respects")
 	err = display.SendCommand("F")
 	if err != nil {
 		return err
@@ -130,6 +128,10 @@ func (display *Display) SendCloseFrame() (err error) {
 	return err
 }
 
+// func (display *Display) SendImage(img image.Image) (err error) {
+// 	return nil
+// }
+
 // SendFrame sends formatted image data to the display
 func (display *Display) SendFrame(addr uint32, num uint8, data []byte) (err error) {
 	if len(data) > 1024 {
@@ -171,13 +173,13 @@ func (display *Display) SendFrame(addr uint32, num uint8, data []byte) (err erro
 			return err
 		}
 	}
-	// verify
+	// Checksum - CheckSum8 Xor
 	var check byte
 	payload := frame.Bytes()
-	for i := 1; i < len(payload[1:]); i++ {
-		check = check ^ payload[i]
+	for i := 1; i < len(payload[1:])+1; i++ {
+		check ^= payload[i]
 	}
-	fmt.Printf("sending check: %s\n", string(check))
+	// fmt.Printf("sending check: %s\n", string(check))
 	err = binary.Write(frame, binary.BigEndian, check)
 	if err != nil {
 		return err
