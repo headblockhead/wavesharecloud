@@ -2,14 +2,10 @@ package main
 
 import (
 	"fmt"
-	"image"
-	"image/color"
 	"image/jpeg"
-	"math/rand"
 	"net"
 	"os"
 
-	"github.com/MaxHalford/halfgone"
 	"github.com/headblockhead/waveshareCloud"
 )
 
@@ -42,120 +38,30 @@ func main() {
 }
 
 func handleRequest(conn net.Conn) {
-	lc := waveshareCloud.NewLoggingConn(conn)
-	display := waveshareCloud.NewDisplay(lc, true)
+	lc := waveshareCloud.NewLoggingConn(conn, false)
+	display := waveshareCloud.NewDisplay(lc, false)
 	err := display.Unlock("12345")
 	if err != nil {
 		fmt.Printf("Error unlocking: %v\n", err)
 	}
-	newimage, err := loadImage("image.jpg")
+	file, err := os.Open("image.jpg")
 	if err != nil {
-		fmt.Printf("Error loading image: %v\n", err)
-	}
-	err = display.SendImageBytes(newimage)
-	if err != nil {
-		fmt.Printf("Error sending image: %v\n", err)
-	}
-	// Shutdown the connection.
-	err = display.Shutdown()
-	if err != nil {
-		fmt.Printf("Error shutting down: %v\n", err)
-	}
-	display.Disconnect()
-}
-
-func generateWhite() (data []byte) {
-	data = make([]byte, 400*300/8)
-	for i := 0; i < (400 * 300 / 8); i++ {
-		data[i] = 0xFF
-	}
-	return data
-}
-
-func generateBlack() (data []byte) {
-	data = make([]byte, 400*300/8)
-	for i := 0; i < (400 * 300 / 8); i++ {
-		data[i] = 0x00
-	}
-	return data
-}
-
-func generateRandomData() (data []byte) {
-	data = make([]byte, 400*300/8)
-	for i := 0; i < (400 * 300 / 8); i++ {
-		data[i] = byte(rand.Intn(0xFF))
-	}
-	return data
-}
-
-func loadImage(path string) (data []byte, err error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
+		fmt.Printf("Error opening image: %v\n", err)
 	}
 	defer file.Close()
 	img, err := jpeg.Decode(file)
 	if err != nil {
-		return nil, err
+		fmt.Printf("Error decoding image: %v\n", err)
 	}
-	gray := halfgone.FloydSteinbergDitherer{}.Apply(halfgone.ImageToGray(img))
-
-	bytes := convertImageToBits(gray)
-	// w2, _ := os.Create("./ditheredimage.jpg")
-	// jpeg.Encode(w2, gray, &jpeg.Options{Quality: 100})
-	return bytes, nil
-}
-
-func generateCheckerboard() (data []byte) {
-	img := image.NewRGBA(image.Rect(0, 0, 400, 300))
-	for y := 0; y < img.Bounds().Max.Y; y++ {
-		for x := 0; x < img.Bounds().Max.X; x++ {
-			if x%2 == 0 && y%2 == 0 {
-				img.Set(x, y, color.White)
-			} else {
-				img.Set(x, y, color.Black)
-			}
-		}
+	err = display.SendImage(img)
+	if err != nil {
+		fmt.Printf("Error sending image: %v\n", err)
 	}
-	bits := convertImageToBits(img)
-	fmt.Printf("%b\n", bits[0])
-	return bits
-}
-
-func convertImageToBits(img image.Image) []byte {
-	wh := img.Bounds()
-	b := make([]byte, (wh.Max.X*wh.Max.Y)/8)
-	for y := 0; y < wh.Max.Y; y++ {
-		for x := 0; x < wh.Max.X; x++ {
-			if r, g, b, _ := img.At(x, y).RGBA(); r == 0 && g == 0 && b == 0 {
-				continue
-			}
-			byteIndex := (y * wh.Max.X / 8) + (x / 8)
-			bitIndex := x % 8
-			b[byteIndex] |= (1 << bitIndex)
-		}
+	// Shutdown the display.
+	err = display.Shutdown()
+	if err != nil {
+		fmt.Printf("Error shutting down: %v\n", err)
 	}
-	return b
-}
-
-func convertBitsToImage(b []byte, bounds image.Rectangle) (img *image.Gray) {
-	w, h := bounds.Dx(), bounds.Dy()
-	img = image.NewGray(image.Rect(0, 0, w, h))
-	for y := 0; y < h; y++ {
-		for x := 0; x < w; x++ {
-			byteIndex := (y * w / 8) + (x / 8)
-			bitIndex := x % 8
-			if hasBit(b[byteIndex], uint(bitIndex)) {
-				img.Set(x, y, color.White)
-				continue
-			}
-			img.Set(x, y, color.Black)
-		}
-	}
-	return img
-}
-
-func hasBit(n byte, pos uint) bool {
-	val := n & (1 << pos)
-	return (val > 0)
+	// Close the connection.
+	display.Disconnect()
 }

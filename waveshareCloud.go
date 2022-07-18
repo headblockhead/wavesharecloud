@@ -4,37 +4,53 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"image"
+	"image/color"
 	"io"
 	"net"
 	"strconv"
 	"strings"
+
+	"github.com/MaxHalford/halfgone"
 )
 
-func NewLoggingConn(conn net.Conn) *LoggingConn {
+// NewLoggingConn returns a new connection that will optionally log all traffic.
+func NewLoggingConn(conn net.Conn, debug bool) *LoggingConn {
 	return &LoggingConn{
 		Connection: conn,
+		Debug:      debug,
 	}
 }
 
+// LoggingConn is a connection that will optionally log all traffic.
 type LoggingConn struct {
 	Connection net.Conn
+	Debug      bool
 }
 
+// Read reads raw data from the connection.
 func (lc *LoggingConn) Read(b []byte) (n int, err error) {
 	n, err = lc.Connection.Read(b)
-	fmt.Println("< " + string(b))
+	if lc.Debug {
+		fmt.Println("< " + string(b))
+	}
 	return n, err
 }
 
+// Write writes raw data to the connection.
 func (lc *LoggingConn) Write(b []byte) (n int, err error) {
-	// fmt.Println("> " + string(b))
+	if lc.Debug {
+		fmt.Println("> " + string(b))
+	}
 	return lc.Connection.Write(b)
 }
 
+// Close closes the connection.
 func (lc *LoggingConn) Close() error {
 	return lc.Connection.Close()
 }
 
+// NewDisplay returns a new display, using a witch of 400 and a height of 300.
 func NewDisplay(conn io.ReadWriteCloser, locked bool) *Display {
 	return &Display{
 		Connection: conn,
@@ -44,7 +60,7 @@ func NewDisplay(conn io.ReadWriteCloser, locked bool) *Display {
 	}
 }
 
-// A Display
+// Display represents the physical display.
 type Display struct {
 	Connection io.ReadWriteCloser
 	unlocked   bool
@@ -52,7 +68,7 @@ type Display struct {
 	Height     int
 }
 
-// SendCommand sends a formatted command to the display
+// SendCommand sends a command to the display.
 func (display *Display) SendCommand(command string) (err error) {
 	var check uint32
 	for i := 0; i < len(command); i++ {
@@ -66,6 +82,7 @@ func (display *Display) SendCommand(command string) (err error) {
 	return nil
 }
 
+// SendImageBytes displays an array of bytes on the screen.
 func (display *Display) SendImageBytes(data []byte) (err error) {
 	if len(data) != (display.Width*display.Height)/8 {
 		return fmt.Errorf("data length does not match display size")
@@ -74,7 +91,7 @@ func (display *Display) SendImageBytes(data []byte) (err error) {
 	if err != nil {
 		return err
 	}
-	_, err = display.UnsafeReceiveData()
+	err = display.ReadBlindlyIgnore()
 	if err != nil {
 		return err
 	}
@@ -88,7 +105,7 @@ func (display *Display) SendImageBytes(data []byte) (err error) {
 		if err != nil {
 			return err
 		}
-		_, err = display.UnsafeReceiveData()
+		err = display.ReadBlindlyIgnore()
 		if err != nil {
 			return err
 		}
@@ -102,37 +119,44 @@ func (display *Display) SendImageBytes(data []byte) (err error) {
 	if err != nil {
 		return err
 	}
-	_, err = display.UnsafeReceiveData()
+	err = display.ReadBlindlyIgnore()
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
+// CloseFrame is the last frame to be sent to the display when drawing an image. It is completely empty.
 var closeFrame = []byte{
 	0x57,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0x00,
 }
 
-// SendFrame sends formatted image data to the display
+// SendCloseFrame sends the last frame to the display
 func (display *Display) SendCloseFrame() (err error) {
 	_, err = display.Connection.Write(closeFrame)
 	if err != nil {
 		return err
 	}
-	_, err = display.UnsafeReceiveData()
+	// We do not need to know the checksum: it does not matter to displaying the image here.
+	err = display.ReadBlindlyIgnore()
 	if err != nil {
 		return err
 	}
-	return err
+	return nil
 }
 
-// func (display *Display) SendImage(img image.Image) (err error) {
-// 	return nil
-// }
+// SendImage converts an image into bytes, then sends it to the display.
+func (display *Display) SendImage(img image.Image) (err error) {
+	imageBytes, err := loadImage(img)
+	if err != nil {
+		return err
+	}
+	return display.SendImageBytes(imageBytes)
+}
 
-// SendFrame sends formatted image data to the display
+// SendFrame sends a frame of image data to the display.
 func (display *Display) SendFrame(addr uint32, num uint8, data []byte) (err error) {
 	if len(data) > 1024 {
 		return fmt.Errorf("data too large, maximum size is 1024")
@@ -163,6 +187,7 @@ func (display *Display) SendFrame(addr uint32, num uint8, data []byte) (err erro
 	if err != nil {
 		return err
 	}
+	// If there are bytes missing in a frame, fill them with 0xFF. This should be expected on the final frame.
 	if remaining := 1024 - len(data); remaining > 0 {
 		remainder := make([]byte, remaining)
 		for i := 0; i < len(remainder); i++ {
@@ -173,37 +198,36 @@ func (display *Display) SendFrame(addr uint32, num uint8, data []byte) (err erro
 			return err
 		}
 	}
-	// Checksum - CheckSum8 Xor
+	// CheckSum8 Xor
 	var check byte
 	payload := frame.Bytes()
+	// The first byte is the 0x57 identifier, so we skip it.
 	for i := 1; i < len(payload[1:])+1; i++ {
 		check ^= payload[i]
 	}
-	// fmt.Printf("sending check: %s\n", string(check))
 	err = binary.Write(frame, binary.BigEndian, check)
 	if err != nil {
 		return err
 	}
+
 	display.Connection.Write(frame.Bytes())
 	return nil
 }
 
-// ReceiveData Receives data from the display and formats it
-func (display *Display) ReceiveData(previousCommand string) (data string, err error) {
-	// The first set of data is the previous command
+// ReceiveCommandOutput receives a previously sent command's output from the display.
+func (display *Display) ReceiveCommandOutput(sentCommand string) (data string, err error) {
+	// The first set of data is the previous command repeated back.
 	buf := make([]byte, 64)
 	_, err = display.Connection.Read(buf)
 	if err != nil {
 		return "", err
 	}
 	command := string(buf)
-	command = strings.Replace(command, " ", "", -1)
-	command = strings.Replace(command, "$", "", -1)
-	command = strings.Replace(command, "#", "", -1)
-	if !strings.Contains(command, previousCommand) {
-		return "", fmt.Errorf("command mismatch: expected %s, got %v", previousCommand, command)
+	command = formatTransmissionString(command)
+	if !strings.Contains(command, sentCommand) {
+		return "", fmt.Errorf("command mismatch: expected %s, got %v", sentCommand, command)
 	}
-	// The second set of data is the real data
+	// The second set of data is the output from calling the command.
 	buf = make([]byte, 64)
 	_, err = display.Connection.Read(buf)
 	if err != nil {
@@ -211,29 +235,35 @@ func (display *Display) ReceiveData(previousCommand string) (data string, err er
 	}
 	data = string(buf)
 
-	data = strings.Replace(data, " ", "", -1)
-	data = strings.Replace(data, "$", "", -1)
-	data = strings.Replace(data, "#", "", -1)
+	data = formatTransmissionString(data)
 
 	return data, nil
 }
 
-//UnsafeReceiveData receives data from the display without checking if it is valid and only returns the first set of data it gets
-func (display *Display) UnsafeReceiveData() (data string, err error) {
-	// The first set of data is the previous command
+// ReadBlindlyIgnore mindlessly reads data from the display and does not do anything wth it.
+func (display *Display) ReadBlindlyIgnore() (err error) {
+	buf := make([]byte, 64)
+	_, err = display.Connection.Read(buf)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// ReadBlindly reads any data from the display and returns it (after formatting).
+func (display *Display) ReadBlindly() (data string, err error) {
 	buf := make([]byte, 64)
 	_, err = display.Connection.Read(buf)
 	if err != nil {
 		return "", err
 	}
 	command := string(buf)
-	command = strings.Replace(command, " ", "", -1)
-	command = strings.Replace(command, "$", "", -1)
-	command = strings.Replace(command, "#", "", -1)
+	command = formatTransmissionString(command)
 
 	return command, nil
 }
 
+// Shutdown sends a command to the display to shut it down.
 func (display *Display) Shutdown() (err error) {
 	if display.unlocked {
 		display.SendCommand("S")
@@ -254,20 +284,20 @@ func (display *Display) GetID() (ID string, err error) {
 	if err != nil {
 		return "", err
 	}
-	data, err := display.ReceiveData("G")
+	data, err := display.ReceiveCommandOutput("G")
 	if err != nil {
 		return "", err
 	}
 	return data, nil
 }
 
-// GetLocked gets whether the display is locked with a PIN
+// GetLocked gets whether the display is locked with a password
 func (display *Display) GetLocked() (unlocked bool, err error) {
 	err = display.SendCommand("C")
 	if err != nil {
 		return false, err
 	}
-	data, err := display.ReceiveData("C")
+	data, err := display.ReceiveCommandOutput("C")
 	if err != nil {
 		return false, err
 	}
@@ -280,13 +310,13 @@ func (display *Display) GetLocked() (unlocked bool, err error) {
 	return unlocked, nil
 }
 
-// GetLocked gets whether the display is locked with a PIN
+// Unlock unlocks the display with a password. It will error if the display is already unlocked.
 func (display *Display) Unlock(password string) (err error) {
 	err = display.SendCommand("C")
 	if err != nil {
 		return err
 	}
-	data, err := display.ReceiveData("C")
+	data, err := display.ReceiveCommandOutput("C")
 	if err != nil {
 		return err
 	}
@@ -295,8 +325,11 @@ func (display *Display) Unlock(password string) (err error) {
 		if err != nil {
 			return err
 		}
-		data, err = display.UnsafeReceiveData()
-		data, err = display.UnsafeReceiveData()
+		err = display.ReadBlindlyIgnore()
+		if err != nil {
+			return err
+		}
+		data, err = display.ReadBlindly()
 		if err != nil {
 			return err
 		}
@@ -310,4 +343,59 @@ func (display *Display) Unlock(password string) (err error) {
 		display.unlocked = true
 		return fmt.Errorf("display is already unlocked")
 	}
+}
+
+// convertImageToBits converts a black and white image to a list of bytes.
+func convertImageToBits(img image.Image) []byte {
+	wh := img.Bounds()
+	b := make([]byte, (wh.Max.X*wh.Max.Y)/8)
+	for y := 0; y < wh.Max.Y; y++ {
+		for x := 0; x < wh.Max.X; x++ {
+			if r, g, b, _ := img.At(x, y).RGBA(); r == 0 && g == 0 && b == 0 {
+				continue
+			}
+			byteIndex := (y * wh.Max.X / 8) + (x / 8)
+			bitIndex := 7 - (x % 8)
+			b[byteIndex] |= (1 << bitIndex)
+		}
+	}
+	return b
+}
+
+// convertBitsToImage converts a list of bytes (and the size of the image from the bytes) to a black and white image.
+func convertBitsToImage(b []byte, bounds image.Rectangle) (img *image.Gray) {
+	w, h := bounds.Dx(), bounds.Dy()
+	img = image.NewGray(image.Rect(0, 0, w, h))
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
+			byteIndex := (y * w / 8) + (x / 8)
+			bitIndex := x % 8
+			if hasBit(b[byteIndex], uint(bitIndex)) {
+				img.Set(x, y, color.White)
+				continue
+			}
+			img.Set(x, y, color.Black)
+		}
+	}
+	return img
+}
+
+func hasBit(n byte, pos uint) bool {
+	val := n & (1 << pos)
+	return (val > 0)
+}
+
+// loadImage takes an image and returns it as a list of black and white, dithered bytes.
+func loadImage(img image.Image) (data []byte, err error) {
+	gray := halfgone.FloydSteinbergDitherer{}.Apply(halfgone.ImageToGray(img))
+	bytes := convertImageToBits(gray)
+	return bytes, nil
+}
+
+// formatTransmissionString extracts the data from the input and output by removing the leading and trailing characters
+func formatTransmissionString(toFormat string) (formatted string) {
+	toFormat = strings.Replace(toFormat, " ", "", -1)
+	toFormat = strings.Replace(toFormat, "$", "", -1)
+	toFormat = strings.Replace(toFormat, "#", "", -1)
+	return toFormat
 }
