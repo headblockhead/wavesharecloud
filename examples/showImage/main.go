@@ -6,7 +6,6 @@ import (
 	"image/jpeg"
 	"net"
 	"os"
-	"time"
 
 	"github.com/headblockhead/waveshareCloud"
 )
@@ -54,33 +53,11 @@ func handleRequest(conn net.Conn) {
 	if err != nil {
 		fmt.Printf("Error opening test pattern image: %v\n", err)
 	}
-	flowerImage, err := openImage("flowers.jpg")
-	if err != nil {
-		fmt.Printf("Error opening flower image: %v\n", err)
-	}
 
 	// Drawing the testpattern image to the display.
 	err = display.SendImage(testPatternImage)
 	if err != nil {
 		fmt.Printf("Error sending testpattern image: %v\n", err)
-	}
-
-	// Wait 3 seconds before sending the next image. This gives the user time to see the image.
-	time.Sleep(time.Second * 3)
-
-	// Drawing the flower image to the display - Cropped from the top left
-	err = display.SendImage(flowerImage)
-	if err != nil {
-		fmt.Printf("Error sending cropped flower image: %v\n", err)
-	}
-
-	// Wait 3 seconds before sending the next image. This gives the user time to see the image.
-	time.Sleep(time.Second * 3)
-
-	// Drawing the flower image to the display - Scaled to fill the screen
-	err = display.SendImageScaled(flowerImage)
-	if err != nil {
-		fmt.Printf("Error sending scaled flower image: %v\n", err)
 	}
 
 	// Shutdown the display.
@@ -93,15 +70,15 @@ func handleRequest(conn net.Conn) {
 }
 
 func openImage(path string) (img image.Image, err error) {
-	// Open the test pattern image and decode it.
-	testPatternFile, err := os.Open("path")
+	// Open an image and decode it.
+	imageFile, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
-	defer testPatternFile.Close()
-	testPatternImage, err := jpeg.Decode(testPatternFile)
+	defer imageFile.Close()
+	img, err = jpeg.Decode(imageFile)
 	if err != nil {
 		return nil, err
 	}
-	return testPatternImage, nil
+	return img, nil
 }
