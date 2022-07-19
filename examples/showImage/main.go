@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"image"
 	"image/jpeg"
 	"net"
 	"os"
@@ -42,29 +43,20 @@ func handleRequest(conn net.Conn) {
 	fmt.Println("New connection from:", conn.RemoteAddr())
 	// Setting up the connection to the display.
 	lc := waveshareCloud.NewLoggingConn(conn, false)
-	// Creating the representation of the display. It is not locked at the moment, so this boolean is false.
-	display := waveshareCloud.NewDisplay(lc, false)
 
-	// Open the test pattern image and decode it.
-	testPatternFile, err := os.Open("testpattern.jpg")
-	if err != nil {
-		fmt.Printf("Error opening testpattern image: %v\n", err)
-	}
-	defer testPatternFile.Close()
-	testPatternImage, err := jpeg.Decode(testPatternFile)
-	if err != nil {
-		fmt.Printf("Error decoding testpattern image: %v\n", err)
-	}
+	// Creating the display. If a password is required to unlock the display, here is where you would enter it.
+	// This automatically unlocks the display when created.
+	// In this case, the display is not locked, so the password is not required.
+	display := waveshareCloud.NewDisplay(lc, "")
 
-	// Open the flower image and decode it.
-	flowerFile, err := os.Open("flowers.jpg")
+	// Open the timages and decode them.
+	testPatternImage, err := openImage("testpattern.jpg")
 	if err != nil {
-		fmt.Printf("Error opening flowers image: %v\n", err)
+		fmt.Printf("Error opening test pattern image: %v\n", err)
 	}
-	defer flowerFile.Close()
-	flowerImage, err := jpeg.Decode(flowerFile)
+	flowerImage, err := openImage("flowers.jpg")
 	if err != nil {
-		fmt.Printf("Error decoding flowers image: %v\n", err)
+		fmt.Printf("Error opening flower image: %v\n", err)
 	}
 
 	// Drawing the testpattern image to the display.
@@ -98,4 +90,18 @@ func handleRequest(conn net.Conn) {
 	}
 	// Close the connection.
 	display.Disconnect()
+}
+
+func openImage(path string) (img image.Image, err error) {
+	// Open the test pattern image and decode it.
+	testPatternFile, err := os.Open("path")
+	if err != nil {
+		return nil, err
+	}
+	defer testPatternFile.Close()
+	testPatternImage, err := jpeg.Decode(testPatternFile)
+	if err != nil {
+		return nil, err
+	}
+	return testPatternImage, nil
 }

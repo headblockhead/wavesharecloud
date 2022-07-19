@@ -51,14 +51,18 @@ func (lc *LoggingConn) Close() error {
 	return lc.Connection.Close()
 }
 
-// NewDisplay returns a new display, using a witch of 400 and a height of 300.
-func NewDisplay(conn io.ReadWriteCloser, locked bool) *Display {
-	return &Display{
+// NewDisplay returns a new display, using a width of 400 and a height of 300. If the password is left empty, it is assumed that the display if unlocked.
+func NewDisplay(conn io.ReadWriteCloser, password string) *Display {
+	display := &Display{
 		Connection: conn,
-		unlocked:   !locked,
+		unlocked:   password != "",
 		Width:      400,
 		Height:     300,
 	}
+	if !display.unlocked {
+		display.Unlock(password)
+	}
+	return display
 }
 
 // Display represents the physical display.
