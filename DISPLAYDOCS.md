@@ -28,6 +28,103 @@
 
 When first setting up, you will need the Android app. You can download it from the [WaveShare Website](https://www.waveshare.net/w/upload/Cloud_app.apk), However if you cannot download it from this link you can download it from [The Wayback Machine](https://web.archive.org/web/20220719161209/https://www.waveshare.net/w/upload/Cloud_app.apk).
 
+# Communication Protocol
+
+Communication is divided into two modes: The Commnd mode and the Data mode. Command mode is used for sending commands (example: Shutdown). Data Mode is used for sending image data to the display.
+
+## Checksum
+
+The checksum used is a simple XOR of the data. For command mode, an implementation in Go would be:
+
+```go
+command := "C"
+
+var check uint32
+for i := 0; i < len(command); i++ {
+    check = check ^ uint32(command[i])
+}
+
+display.Connection.Write([]byte(";" + command + "/" + string(rune(check))))
+```
+
+And for data mode, an implementation in Go would be:
+
+```go
+var check byte
+
+payload := frame.Bytes()
+
+// The first byte is the 0x57 identifier, so we skip it.
+for i := 1; i < len(payload[1:])+1; i++ {
+    // CheckSum8 Xor
+    check ^= payload[i]
+}
+
+// The checksum byte is the last byte of the frame. It is stored as BigEndian.
+// This function appends the checksum byte to the frame.
+err = binary.Write(frame, binary.BigEndian, check)
+if err != nil {
+    return err
+}
+
+display.Connection.Write(frame.Bytes())
+```
+
+## Command Format
+
+For the command mode, the command is sent in the following format:  
+‘;’ + Command (with optional data) + '/' + Checksum
+
+## Data Format
+
+For the data mode, the data is sent in the following format:  
+0x57 + 4 Byte addr + 4 Byte len + 1 Byte num + Data + Checksum
+
+| Label | Value                           |
+| ----- | ------------------------------- |
+| Addr  | Address of data                 |
+| Len   | Length of data                  |
+| Num   | Frame number of current section |
+| Data  | The data to be transmitted      |
+
+### Recommendations:
+
+- Frames should be the same length
+- Frames should not be larger than 1100 Bytes
+- Num should be static (at 0x00), due to a software update bug.
+- Wait until the device has replied before sending the next frame.
+
+### Information:
+
+- If the addr and len are both 0x00, the display will assume transmission has completed, and the display will be refreshed.
+
+## Response Format
+
+The response is sent in the following format:
+'$' + Data + '#'
+
+This format is the same for command and data mode.
+
+## Command List
+
+| Command | Arguments               | Description                                          | 1st response | 2nd response | Requires Unlock |
+| ------- | ----------------------- | ---------------------------------------------------- | ------------ | ------------ | --------------- |
+| C       |                         | Checks if the device is locked                       |              |              | - [ ]           |
+| N       | Password                | Unlock the device                                    |              |              | - [ ]           |
+| G       |                         | Gets the custom ID of the device                     |              |              | - [ ]           |
+| r       | Time in seconds (<9999) | Sleep - Only on 2.13 inch                            |              |              | - [ ]           |
+| 0       | New ID                  | Gives the device a new ID                            |              |              | - [x]           |
+| 1       | New IP                  | Gives the device a new IP adress on the network      |              |              | - [x]           |
+| 2       | New WIFI SSID           | Gives the device a new SSID to connect to with WIFI  |              |              | - [x]           |
+| 3       | New WIFI password       | Gives the device a new password for the WIFI network |              |              | - [x]           |
+| P       | New device password     | Sets a new password for the device                   |              |              | - [x]           |
+| L       | Boolean - Lock Device   | Controls the device's locked state                   |              |              | - [x]           |
+| s       | Boolean - Flag Bit      | I do not know what the flag bit does :P              |              |              | - [x]           |
+| B       |                         | Open for bluetooth connections                       |              |              | - [x]           |
+| b       |                         | Check battery voltage                                |              |              | - [x]           |
+| S       |                         | Shutdown the device                                  |              |              | - [x]           |
+| R       |                         | Restart the device                                   |              |              | - [x]           |
+
 ---
 
 # Below is not a valid markdown file, it has not yet been edited by me. Proceed if you dare! (This is a copy-paste of the original website's text)
@@ -107,62 +204,6 @@ Cloud ESP32 e-Paper Board manual 5.png
 Ⅴ. The APP will disconnect and reboot the device if the configuration is uploaded successfully.
 Cloud ESP32 e-Paper Board manual 6.png
 Note: We recommend you set static IP for the device.
-Communicating Protocol
-Communicating is divided into two modes: Command mode and the data mode. Command mode is used for sending commands. data Mode is used for sending image data to e-Paper.
-
-Command Format
-‘;’+Command（+Data）+'/'+Parity
-
-Data Format
-0x57+4Byte addr+ 4Byte len +1Byte num + len Byte data +Verify
-
-Return Format
-'$'+Data+'#' The format of response of Command and Data are the same
-
-Note:The Verity is the XOR result of data which is marked in red
-
-Command Mode：
-Command Format
-‘;’+Comamnd（+Data）+'/'+Verify
-Commands (locked)
-Comamnd Desctiption Return
-'C' Check if the device is locked Parity bit + Flag bit 0 or 1, 0: unclocked, 1: locked.
-‘N' + Device password Unclocked the device Parity bit + Flag bit 0 or 1, 0: failed to lock; 1: lock the device successffully.
-'G' Get the ID of device ID
-'r' + Sleep time (<9999) Set the device to sleep mode Parity bit
-PS: The sleep command is only available in 2.13inch e-Paper Cloud Module.
-
-These commands can be used if the device is locked.
-Comamnds (unlocked)
-Command Description Return
-'0' + name Modify the ID Parity bit
-'1' + IP address Modify the IP address of Host Parity bit
-‘2’+SSID Modify the WIFI SSID Parity bit
-‘3’+password Modify the WIFI password Parity bit
-‘P’+userpassword Modify the device password Parity bit
-'L' +'0' / 'L' + '1' Set the device lock; 1 to lock and 0 to unlock Parity bit
-'s' + '0' /'s' + '1' Set the flag bit, 0 to disable and 1 to enable Parity bit
-'F' Enter data mode Parity bit
-'B' Open Bluetooth Parity bit
-'b' Check the current voltage of battery Parity bit + voltage of battery (mv)
-'S' Shutdown Parity bit
-'R' Restart Parity bit
-These commands can be used when the device is unlocked.
-Data Mode：
-Data Format
-0x57+4Byte addr+ 4Byte len +1Byte num + len Byte data +Verify
-Data Lebs Content
-addr 4byte Address if data
-len 4byte Length os data
-num 1byte The frame number of current sector
-data len byte The data transmitted
-Note：
-Recommend you to transmit the frames with same lenght
-The size of frame transmitted should not larger than 1100Byte, otherwise it cose data lose.
-num should be static variable because it may be invalid because of version update.
-The data frame doesn't have a stop bit, you need to wait for the verity data before sending the next frame, otherwise, it causes failure.
-The e-Paper will update automatically and exit from update mode when the addr and len are 0.
-For mare detailes, please refer to the python3 examples provided.
 
 Using Guides for RPI
 Install Libraries
