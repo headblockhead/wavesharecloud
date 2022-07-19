@@ -107,23 +107,23 @@ This format is the same for command and data mode.
 
 ## Command List
 
-| Command | Arguments               | Description                                          | 1st response | 2nd response | Requires Unlock |
-| ------- | ----------------------- | ---------------------------------------------------- | ------------ | ------------ | --------------- |
-| C       |                         | Checks if the device is locked                       | Parity Bit   | Locked?      | - [ ]           |
-| N       | Password                | Unlock the device                                    | Parity Bit   | Sucsessful?  | - [ ]           |
-| G       |                         | Gets the custom ID of the device                     | Parity Bit   | ID           | - [ ]           |
-| r       | Time in seconds (<9999) | Sleep - Only on 2.13 inch                            | Parity Bit   |              | - [ ]           |
-| 0       | New ID                  | Gives the device a new ID                            | Parity Bit   |              | - [x]           |
-| 1       | New IP                  | Gives the device a new IP adress on the network      | Parity Bit   |              | - [x]           |
-| 2       | New WIFI SSID           | Gives the device a new SSID to connect to with WIFI  | Parity Bit   |              | - [x]           |
-| 3       | New WIFI password       | Gives the device a new password for the WIFI network | Parity Bit   |              | - [x]           |
-| P       | New device password     | Sets a new password for the device                   | Parity Bit   |              | - [x]           |
-| L       | Boolean - Lock Device   | Controls the device's locked state                   | Parity Bit   |              | - [x]           |
-| s       | Boolean - Flag Bit      | I do not know what the flag bit does :P              | Parity Bit   |              | - [x]           |
-| B       |                         | Open for bluetooth connections                       | Parity Bit   |              | - [x]           |
-| b       |                         | Check battery voltage                                | Parity Bit   | Level (mv)   | - [x]           |
-| S       |                         | Shutdown the device                                  | Parity Bit   |              | - [x]           |
-| R       |                         | Restart the device                                   | Parity Bit   |              | - [x]           |
+| Command | Arguments               | Description                                          | 1st response | 2nd response | Requires Unlock              |
+| ------- | ----------------------- | ---------------------------------------------------- | ------------ | ------------ | ---------------------------- |
+| C       |                         | Checks if the device is locked                       | Parity Bit   | Locked?      | - [ ] Unlock                 |
+| N       | Password                | Unlock the device                                    | Parity Bit   | Sucsessful?  | - [ ] Unlock                 |
+| G       |                         | Gets the custom ID of the device                     | Parity Bit   | ID           | - [ ] Unlock                 |
+| r       | Time in seconds (<9999) | Sleep - Only on 2.13 inch                            | Parity Bit   |              | - [ ] Unlock                 |
+| 0       | New ID                  | Gives the device a new ID                            | Parity Bit   |              | <ul><li>[x] Unlock</li></ul> |
+| 1       | New IP                  | Gives the device a new IP adress on the network      | Parity Bit   |              | - [x] Unlock                 |
+| 2       | New WIFI SSID           | Gives the device a new SSID to connect to with WIFI  | Parity Bit   |              | - [x] Unlock                 |
+| 3       | New WIFI password       | Gives the device a new password for the WIFI network | Parity Bit   |              | - [x] Unlock                 |
+| P       | New device password     | Sets a new password for the device                   | Parity Bit   |              | - [x] Unlock                 |
+| L       | Boolean - Lock Device   | Controls the device's locked state                   | Parity Bit   |              | - [x] Unlock                 |
+| s       | Boolean - Flag Bit      | I do not know what the flag bit does :P              | Parity Bit   |              | - [x] Unlock                 |
+| B       |                         | Open for bluetooth connections                       | Parity Bit   |              | - [x] Unlock                 |
+| b       |                         | Check battery voltage                                | Parity Bit   | Level (mv)   | - [x] Unlock                 |
+| S       |                         | Shutdown the device                                  | Parity Bit   |              | - [x] Unlock                 |
+| R       |                         | Restart the device                                   | Parity Bit   |              | - [x] Unlock                 |
 
 ---
 
