@@ -23,6 +23,11 @@
 | Device Dimensions         | 96.5mm x 85mm        |
 | Display Dimensions        | 84.8mm x 63.6mm      |
 | Refreshes/1000mah battery | 1500+                |
+| Operating temperature     | 0°C to 50°C          |
+| Operating humidity        | ~35% to ~65%         |
+| Storage temperature       | <30°C                |
+| Storage humidity          | <55%                 |
+| Storage time              | <6 months            |
 
 # Setup
 
@@ -105,7 +110,7 @@ The response is sent in the following format:
 
 This format is the same for command and data mode.
 
-## Command List
+# Command List
 
 | Command | Arguments               | Description                                          | 1st response | 2nd response | Requires Unlock                       |
 | ------- | ----------------------- | ---------------------------------------------------- | ------------ | ------------ | ------------------------------------- |
@@ -125,7 +130,7 @@ This format is the same for command and data mode.
 | S       |                         | Shutdown the device                                  | Parity Bit   |              | <ul><li>[x] Requires Unlock</li></ul> |
 | R       |                         | Restart the device                                   | Parity Bit   |              | <ul><li>[x] Requires Unlock</li></ul> |
 
----
+# Status Icons
 
 # Below is not a valid markdown file, it has not yet been edited by me. Proceed if you dare! (This is a copy-paste of the original website's text)
 
@@ -204,131 +209,3 @@ Cloud ESP32 e-Paper Board manual 5.png
 Ⅴ. The APP will disconnect and reboot the device if the configuration is uploaded successfully.
 Cloud ESP32 e-Paper Board manual 6.png
 Note: We recommend you set static IP for the device.
-
-Using Guides for RPI
-Install Libraries
-#python3
-sudo apt-get update
-sudo apt-get install python3-pip
-sudo apt-get install python3-pil
-sudo apt-get install python3-tqdm
-sudo apt-get install python3-numpy
-sudo apt-get install python3-progressbar
-Download the demo codes
-Open a terminal and runthe following commands：
-sudo apt-get install p7zip-full
-sudo wget https://www.waveshare.com/w/upload/2/2e/Cloud_RPI.7z
-7z x Cloud_RPI.7z
-cd Cloud_RPI
-python
-The demo codes can only support python3.
-Please go to the directory of Cloud_RPI and run the command:
-#This code is used to climb the picture of the Waveshare website and transmit the image data to the slave device.
-sudo python3 ./examples/display_WS.py
-#The codes will draw figures and send the image data to the slave device.
-sudo python3 ./examples/display_EPD.py
-API Description
-There are three directories in lib,http_get、tcp_server 和 waveshare_epd, They are used to climb HTTP pictures, TCP service, and the functions of e-Paper.
-Cloud ESP32 e-Paper Board manual 10.png
-
-tcp_sver.py
-Path:Cloud_RPI/lib/tcp_server
-Vreate a tcp_server class in tcp_sver.py file. You need to inherits the class and refactor the handle function when using.
-
-def handle(self)
-Every time the new client connected, it should call the handle function.
-
-Receive Message
-def Get_msg(self)
-Command Return
-'$'+Data+'#' Data
-Send Command
-def Send_cmd(self,cmd)
-Parameter cmd is the command sent
-Command
-cmd ‘;’+cmd+'/'+Parity
-Sent data
-def Send_data(self,data)
-The parameter data is message transmitte (inlcuded addree and lenghta nd so on) data.
-Command
-data 0x57+data+ Parity
-Set size
-def set_size(self,w,h)
-w: The width of image; h: The height of image.
-Take bicolor e-Paper as example, 1 bit stands of one pixel, then you we gets
-Len of data=Width of image(w)\*Height of image(h)/8
-Refer to 4.2inch e-Paper Module
-
-Update function
-def flush_buffer(self,DATA)
-DATA; The image data. the image data can be get by the getbuffer function.
-Paramter Send times Lenght of every frame（len） Content DATA(Image data) Total lenght of image data/lenght of singal frame（len） 1024 Byte（Configurable） 0x57+4 Byte addr+ 4 Byte len +1 Byte num + len Byte data+Parity
-The lenght of singal transmittion should less than 1100 Byte, or it will cause data loss.
-
-Check voltage of battery
-Get the current voltage
-def check_batter(self)
-Power Off Function
-Power off or low power state
-def Shutdown(self)
-http_get.py
-Path：Cloud_RPI/lib/http_get
-Download picture
-def Get_PNG(Url,Name)
-This function is used to download the picture from Url and save it to the current directory with Name
-
-epd4in2.py
-Path：Cloud_RPI/lib/waveshare_epd
-Convert the picture to image data.
-def getbuffer(self, image):
-waveshare_epd.py
-Directory: Cloud_RPI/lib/waveshare_epd
-Convert image information to queue
-def getbuffer(self, image):
-Configure Windows
-This guide is made in Windows 10
-Note：
-Please make sure that you have installed python3 on your Windows PC and the default version is python3 if you installed multiple versions.
-You may need to close the firewall to make the python work.
-Install libraries
-Open a CMD or Powershell to install libraries with the following commands:
-
-#python3
-python -m pip install tqdm
-python -m pip install pillow
-python -m pip install numpy
-python -m pip install pypiwin32
-python -m pip install progressbar
-Download demo codes
-Download the Windows demo, unzip, and enter the Cloud_WIN directory.
-
-python
-Note that you need to run the CMD or PowerShell under the Cloud_WIN direcoty and turn the following command.
-
-python ./examples/\*\*\*inch_display_EPD
-For example：
-
-#If you have 4.2inch e-Paper Cloud Module
-python ./examples/4.2inch_display_EPD
-#If you have2.13inch e-Paper Cloud Module
-python ./examples/2.13inch_display_EPD
-Resource
-Related Guides
-Making BMP file for e-Paper
-Androdi app
-Android APP
-Android APP Souces Codes
-You can also scan the below QR Code to install the APP
-Cloud APP.png
-Raspberry Pi Examples
-Raspberry Pi examples
-Windows Examples
-
-FAQ
-Question:What is the usage environment of the e-ink screen?
-Answer:
-【Working conditions】Temperature range: 0~50°C; Humidity range: 35%~65%RH
-【Storage conditions】: Temperature range: below 30°C; Humidity range: below 55%RH; Maximum storage time: 6 months
-
-Support
-If you require technical support, please go to the Support page and open a ticket.
