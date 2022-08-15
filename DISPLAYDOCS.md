@@ -130,9 +130,7 @@ This format is the same for command and data mode.
 | S       |                         | Shutdown the device                                  | Parity Bit   |              | <ul><li>[x] Requires Unlock</li></ul> |
 | R       |                         | Restart the device                                   | Parity Bit   |              | <ul><li>[x] Requires Unlock</li></ul> |
 
-# Status Icons
-
-# Below is not a valid markdown file, it has not yet been edited by me. Proceed if you dare! (This is a copy-paste of the original website's text)
+# TODO: Format below text
 
 You can configure the devices via wifi or Bluetooth, if you are the first time configure the device, only the Bluetooth is available.
 The firmware of the 4,2inch cannot be reprogrammed by used because the flash is locked.
