@@ -9,7 +9,7 @@
 First thing you need to do is install the package.
 
 ```bash
-go get github.com/headblochead/waveshareCloud
+go get github.com/headblockhead/waveshareCloud
 ```
 
 Now, try running one of the [examples](#examples).
