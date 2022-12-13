@@ -1,4 +1,4 @@
-module github.com/headblockhead/waveshareCloud
+module github.com/headblockhead/wavesharecloud
 
 go 1.17
 
