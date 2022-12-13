@@ -1,4 +1,4 @@
-# waveshareCloud
+# wavesharecloud
 
 ### A Go Package to control the waveshareCloud 4.2 inch e-paper cloud module
 
@@ -9,7 +9,7 @@
 First thing you need to do is install the package.
 
 ```bash
-go get github.com/headblockhead/waveshareCloud
+go get github.com/headblockhead/wavesharecloud
 ```
 
 Now, try running one of the [examples](#examples).
