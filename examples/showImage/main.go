@@ -7,7 +7,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/headblockhead/waveshareCloud"
+	"github.com/headblockhead/wavesharecloud"
 )
 
 const (
@@ -41,12 +41,12 @@ func main() {
 func handleRequest(conn net.Conn) {
 	fmt.Println("New connection from:", conn.RemoteAddr())
 	// Setting up the connection to the display.
-	lc := waveshareCloud.NewLoggingConn(conn, false)
+	lc := wavesharecloud.NewLoggingConn(conn, false)
 
 	// Creating the display. If a password is required to unlock the display, here is where you would enter it.
 	// This automatically unlocks the display when created.
 	// In this case, the display is not locked, so the password is not required.
-	display := waveshareCloud.NewDisplay(lc, "")
+	display := wavesharecloud.NewDisplay(lc, "")
 
 	// Open the timages and decode them.
 	testPatternImage, err := openImage("testpattern.jpg")
