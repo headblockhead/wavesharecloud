@@ -1,4 +1,4 @@
-package waveshareCloud
+package wavesharecloud
 
 import (
 	"bytes"
