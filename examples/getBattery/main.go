@@ -21,28 +21,26 @@ func main() {
 		fmt.Printf("Error listening for connections: %v", err)
 		os.Exit(1)
 	}
-	// Close the listener when the application closes.
-	defer l.Close()
 	fmt.Println("Listening on " + CONN_HOST + ":" + CONN_PORT)
+	defer l.Close()
+	
 	for {
-		// Listen for an incoming connection.
+		// Wait for an incoming connection.
 		conn, err := l.Accept()
 		if err != nil {
 			fmt.Printf("Error accepting a connection: %v", err)
 			os.Exit(1)
 		}
-		// Handle connections in a new goroutine.
+		// Handle the connection in a new goroutine.
 		go handleRequest(conn)
 	}
 }
 
 func handleRequest(conn net.Conn) {
 	fmt.Println("New connection from:", conn.RemoteAddr())
-	// Setting up the connection to the display.
 	lc := wavesharecloud.NewLoggingConn(conn, false)
 
-	// Creating the display. If a password is required to unlock the display, here is where you would enter it.
-	// This automatically unlocks the display when created.
+	// If a password is required to unlock the display, it should be provided as the second argument, and the display will be unlocked.
 	// In this case, the display is not locked, so the password is not required.
 	display := wavesharecloud.NewDisplay(lc, "")
 
@@ -52,11 +50,9 @@ func handleRequest(conn net.Conn) {
 	}
 	fmt.Println("Battery level:", battery)
 
-	// Shutdown the display.
-	err = display.Shutdown()
+	err := display.Shutdown()
 	if err != nil {
 		fmt.Printf("Error shutting down: %v\n", err)
 	}
-	// Close the connection.
 	display.Disconnect()
 }
